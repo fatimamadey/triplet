@@ -49,3 +49,50 @@ export async function deleteTrip(tripId: string) {
   mutate('/api/trips');
   return true;
 }
+
+// Flight mutations
+
+export async function addFlight(tripId: string, data: {
+  airline?: string;
+  flight_number?: string;
+  origin: string;
+  destination: string;
+  departure_at?: string;
+  arrival_at?: string;
+  price?: number;
+  currency?: string;
+  passengers?: number;
+  amadeus_offer_id?: string;
+  raw_data?: unknown;
+}) {
+  const res = await fetch(`/api/trips/${tripId}/flights`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to add flight');
+  }
+
+  const flight = await res.json();
+  mutate(`/api/trips/${tripId}/flights`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return flight;
+}
+
+export async function removeFlight(tripId: string, flightId: string) {
+  const res = await fetch(`/api/trips/${tripId}/flights/${flightId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to remove flight');
+  }
+
+  mutate(`/api/trips/${tripId}/flights`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return true;
+}
