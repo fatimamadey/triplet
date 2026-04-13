@@ -96,3 +96,49 @@ export async function removeFlight(tripId: string, flightId: string) {
   mutate(`/api/trips/${tripId}/costs`);
   return true;
 }
+
+// Hotel mutations
+
+export async function addHotel(tripId: string, data: {
+  name: string;
+  address?: string;
+  check_in?: string;
+  check_out?: string;
+  price_per_night?: number;
+  total_price?: number;
+  currency?: string;
+  rooms?: number;
+  rating?: number;
+  image_url?: string;
+}) {
+  const res = await fetch(`/api/trips/${tripId}/hotels`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to add hotel');
+  }
+
+  const hotel = await res.json();
+  mutate(`/api/trips/${tripId}/hotels`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return hotel;
+}
+
+export async function removeHotel(tripId: string, hotelId: string) {
+  const res = await fetch(`/api/trips/${tripId}/hotels/${hotelId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to remove hotel');
+  }
+
+  mutate(`/api/trips/${tripId}/hotels`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return true;
+}
