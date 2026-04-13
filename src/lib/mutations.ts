@@ -142,3 +142,63 @@ export async function removeHotel(tripId: string, hotelId: string) {
   mutate(`/api/trips/${tripId}/costs`);
   return true;
 }
+
+// Itinerary mutations
+
+export async function generateDays(tripId: string) {
+  const res = await fetch(`/api/trips/${tripId}/itinerary`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'generate' }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to generate days');
+  }
+
+  mutate(`/api/trips/${tripId}/itinerary`);
+  return res.json();
+}
+
+export async function addItineraryItem(tripId: string, dayId: string, data: {
+  title: string;
+  category?: string;
+  start_time?: string;
+  end_time?: string;
+  estimated_cost?: number;
+  currency?: string;
+  notes?: string;
+  place_id?: string;
+  place_data?: unknown;
+}) {
+  const res = await fetch(`/api/trips/${tripId}/itinerary/${dayId}/items`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to add item');
+  }
+
+  mutate(`/api/trips/${tripId}/itinerary`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return res.json();
+}
+
+export async function removeItineraryItem(tripId: string, dayId: string, itemId: string) {
+  const res = await fetch(`/api/trips/${tripId}/itinerary/${dayId}/items/${itemId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to remove item');
+  }
+
+  mutate(`/api/trips/${tripId}/itinerary`);
+  mutate(`/api/trips/${tripId}/costs`);
+  return true;
+}
