@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUserId, unauthorized } from '@/lib/auth';
-import { amadeusGet } from '@/lib/amadeus';
+import { searchFlights } from '@/lib/amadeus';
 
 export async function GET(req: NextRequest) {
   const userId = await getAuthUserId();
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const destination = searchParams.get('destination');
   const departureDate = searchParams.get('departureDate');
   const returnDate = searchParams.get('returnDate');
-  const adults = searchParams.get('adults') || '1';
+  const adults = searchParams.get('adults');
 
   if (!origin || !destination || !departureDate) {
     return NextResponse.json(
@@ -20,87 +20,71 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Check if Amadeus is configured
-  if (!process.env.AMADEUS_API_KEY || !process.env.AMADEUS_API_SECRET) {
+  if (!process.env.SERPAPI_API_KEY) {
     return NextResponse.json(
-      { error: 'Flight search API not configured. Add AMADEUS_API_KEY and AMADEUS_API_SECRET to .env.local' },
+      { error: 'Flight search not configured. Add SERPAPI_API_KEY to .env.local' },
       { status: 503 }
     );
   }
 
   try {
-    const params: Record<string, string> = {
-      originLocationCode: origin.toUpperCase(),
-      destinationLocationCode: destination.toUpperCase(),
-      departureDate,
-      adults,
-      max: '10',
-      currencyCode: 'USD',
-    };
+    const data = await searchFlights({
+      origin,
+      destination,
+      outboundDate: departureDate,
+      returnDate: returnDate || undefined,
+      adults: adults ? parseInt(adults) : undefined,
+    });
 
-    if (returnDate) {
-      params.returnDate = returnDate;
-    }
+    // Combine best_flights and other_flights, limit to 10 total
+    const allOffers = [
+      ...(data.best_flights || []),
+      ...(data.other_flights || []),
+    ].slice(0, 10);
 
-    const data = await amadeusGet('/v2/shopping/flight-offers', params) as {
-      data?: Array<Record<string, unknown>>;
-    };
-
-    // Transform Amadeus response to simplified format
-    const offers = (data.data || []).map((offer: Record<string, unknown>) => {
-      const itineraries = offer.itineraries as Array<{
-        segments: Array<{
-          carrierCode: string;
-          number: string;
-          departure: { iataCode: string; at: string };
-          arrival: { iataCode: string; at: string };
-        }>;
-        duration: string;
-      }>;
-      const price = offer.price as { total: string; currency: string };
-
-      const outbound = itineraries[0];
-      const firstSegment = outbound.segments[0];
-      const lastSegment = outbound.segments[outbound.segments.length - 1];
+    const offers = allOffers.map((offer, i) => {
+      const firstFlight = offer.flights[0];
+      const lastFlight = offer.flights[offer.flights.length - 1];
 
       return {
-        id: offer.id,
-        airline: firstSegment.carrierCode,
-        flightNumber: `${firstSegment.carrierCode}${firstSegment.number}`,
-        origin: firstSegment.departure.iataCode,
-        destination: lastSegment.arrival.iataCode,
-        departureAt: firstSegment.departure.at,
-        arrivalAt: lastSegment.arrival.at,
-        duration: outbound.duration,
-        stops: outbound.segments.length - 1,
-        price: parseFloat(price.total),
-        currency: price.currency,
-        segments: outbound.segments.map((seg) => ({
-          airline: seg.carrierCode,
-          flightNumber: `${seg.carrierCode}${seg.number}`,
-          origin: seg.departure.iataCode,
-          destination: seg.arrival.iataCode,
-          departureAt: seg.departure.at,
-          arrivalAt: seg.arrival.at,
+        id: `flight-${i}`,
+        airline: firstFlight.airline,
+        airlineLogo: firstFlight.airline_logo,
+        flightNumber: firstFlight.flight_number,
+        origin: firstFlight.departure_airport.id,
+        originAirport: firstFlight.departure_airport.name,
+        destination: lastFlight.arrival_airport.id,
+        destinationAirport: lastFlight.arrival_airport.name,
+        departureAt: firstFlight.departure_airport.time,
+        arrivalAt: lastFlight.arrival_airport.time,
+        totalDuration: offer.total_duration,
+        stops: offer.flights.length - 1,
+        layovers: (offer.layovers || []).map((l) => ({
+          airport: l.id,
+          airportName: l.name,
+          duration: l.duration,
         })),
-        returnItinerary: itineraries[1]
-          ? {
-              duration: itineraries[1].duration,
-              stops: itineraries[1].segments.length - 1,
-              segments: itineraries[1].segments.map((seg) => ({
-                airline: seg.carrierCode,
-                flightNumber: `${seg.carrierCode}${seg.number}`,
-                origin: seg.departure.iataCode,
-                destination: seg.arrival.iataCode,
-                departureAt: seg.departure.at,
-                arrivalAt: seg.arrival.at,
-              })),
-            }
-          : null,
+        price: offer.price,
+        currency: 'USD',
+        type: offer.type,
+        segments: offer.flights.map((seg) => ({
+          airline: seg.airline,
+          airlineLogo: seg.airline_logo,
+          flightNumber: seg.flight_number,
+          origin: seg.departure_airport.id,
+          destination: seg.arrival_airport.id,
+          departureAt: seg.departure_airport.time,
+          arrivalAt: seg.arrival_airport.time,
+          duration: seg.duration,
+          airplane: seg.airplane,
+        })),
       };
     });
 
-    return NextResponse.json(offers);
+    return NextResponse.json({
+      flights: offers,
+      priceInsights: data.price_insights || null,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Flight search failed';
     return NextResponse.json({ error: message }, { status: 500 });

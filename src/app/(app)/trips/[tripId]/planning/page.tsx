@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Plane, Hotel, AlertCircle } from "lucide-react";
+import { Plane, Hotel, AlertCircle, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 import FlightSearchForm from "@/components/planning/FlightSearchForm";
 import FlightResultCard from "@/components/planning/FlightResultCard";
@@ -22,11 +22,13 @@ export default function PlanningPage() {
   const [searchParams, setSearchParams] = useState<FlightSearchParams | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
 
-  const { flights, isLoading: flightsLoading } = useFlights(tripId);
+  const { flights } = useFlights(tripId);
   const {
     results: searchResults,
+    priceInsights,
     isLoading: searchLoading,
     isError: searchError,
+    errorMessage,
   } = useFlightSearch(searchParams);
 
   async function handleAddFlight(offer: FlightOffer) {
@@ -41,7 +43,6 @@ export default function PlanningPage() {
         arrival_at: offer.arrivalAt,
         price: offer.price,
         currency: offer.currency,
-        amadeus_offer_id: offer.id,
       });
       toast.success("Flight added to trip!");
     } catch {
@@ -102,15 +103,14 @@ export default function PlanningPage() {
         {searchParams && (
           <div className="mt-4 space-y-3">
             {searchLoading && (
-              <p className="text-sm text-muted">Searching for flights...</p>
+              <p className="text-sm text-muted">Searching Google Flights...</p>
             )}
 
             {searchError && (
-              <div className="flex items-center gap-2 text-coral text-sm">
-                <AlertCircle size={16} />
+              <div className="flex items-start gap-2 text-coral text-sm">
+                <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
                 <span>
-                  Flight search failed. Make sure AMADEUS_API_KEY and
-                  AMADEUS_API_SECRET are set in .env.local
+                  {errorMessage || "Flight search failed. Check your SERPAPI_API_KEY in .env.local"}
                 </span>
               </div>
             )}
@@ -121,10 +121,32 @@ export default function PlanningPage() {
               </p>
             )}
 
+            {/* Price insights */}
+            {priceInsights && (
+              <div className="flex items-center gap-3 bg-teal/10 rounded-lg px-4 py-2 text-sm">
+                <TrendingDown size={16} className="text-teal" />
+                <span>
+                  Lowest: <strong>${priceInsights.lowest_price}</strong>
+                  {priceInsights.typical_price_range && (
+                    <> · Typical range: ${priceInsights.typical_price_range[0]}–${priceInsights.typical_price_range[1]}</>
+                  )}
+                  {priceInsights.price_level && (
+                    <span className={`ml-2 text-xs px-1.5 py-0.5 rounded ${
+                      priceInsights.price_level === 'low' ? 'bg-pin-green/20 text-pin-green' :
+                      priceInsights.price_level === 'typical' ? 'bg-pin-blue/20 text-pin-blue' :
+                      'bg-coral/20 text-coral'
+                    }`}>
+                      {priceInsights.price_level}
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+
             {searchResults.length > 0 && (
               <>
                 <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">
-                  {searchResults.length} Results
+                  {searchResults.length} Flights Found
                 </h3>
                 {searchResults.map((offer) => (
                   <FlightResultCard

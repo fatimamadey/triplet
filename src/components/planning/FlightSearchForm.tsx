@@ -9,7 +9,7 @@ interface FlightSearchFormProps {
     destination: string;
     departureDate: string;
     returnDate?: string;
-    adults: number;
+    adults?: number;
   }) => void;
   isLoading: boolean;
 }
@@ -42,7 +42,7 @@ export default function FlightSearchForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold text-muted mb-1 uppercase tracking-wide">
-            From (IATA Code)
+            From (Airport Code)
           </label>
           <input
             type="text"
@@ -56,7 +56,7 @@ export default function FlightSearchForm({
         </div>
         <div>
           <label className="block text-xs font-semibold text-muted mb-1 uppercase tracking-wide">
-            To (IATA Code)
+            To (Airport Code)
           </label>
           <input
             type="text"
@@ -118,7 +118,7 @@ export default function FlightSearchForm({
         {isLoading ? (
           <>
             <Loader2 size={16} className="animate-spin" />
-            Searching...
+            Searching Google Flights...
           </>
         ) : (
           <>

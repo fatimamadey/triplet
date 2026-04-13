@@ -1,60 +1,93 @@
-let cachedToken: { access_token: string; expires_at: number } | null = null;
+// SerpAPI Google Flights helper
+// Free tier: 100 searches/month — use sparingly!
 
-export async function getAmadeusToken(): Promise<string> {
-  if (cachedToken && Date.now() < cachedToken.expires_at) {
-    return cachedToken.access_token;
+const SERPAPI_BASE = 'https://serpapi.com/search';
+
+export async function searchFlights(params: {
+  origin: string;
+  destination: string;
+  outboundDate: string;
+  returnDate?: string;
+  adults?: number;
+}): Promise<SerpFlightResponse> {
+  const apiKey = process.env.SERPAPI_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('SerpAPI not configured. Add SERPAPI_API_KEY to .env.local');
   }
 
-  const apiKey = process.env.AMADEUS_API_KEY;
-  const apiSecret = process.env.AMADEUS_API_SECRET;
+  const url = new URL(SERPAPI_BASE);
+  url.searchParams.set('engine', 'google_flights');
+  url.searchParams.set('api_key', apiKey);
+  url.searchParams.set('departure_id', params.origin.toUpperCase());
+  url.searchParams.set('arrival_id', params.destination.toUpperCase());
+  url.searchParams.set('outbound_date', params.outboundDate);
+  url.searchParams.set('type', params.returnDate ? '1' : '2'); // 1=round trip, 2=one way
+  url.searchParams.set('currency', 'USD');
+  url.searchParams.set('hl', 'en');
+  url.searchParams.set('sort_by', '2'); // sort by price
 
-  if (!apiKey || !apiSecret) {
-    throw new Error('Amadeus API not configured');
+  if (params.returnDate) {
+    url.searchParams.set('return_date', params.returnDate);
   }
 
-  const res = await fetch(
-    'https://test.api.amadeus.com/v1/security/oauth2/token',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type: 'client_credentials',
-        client_id: apiKey,
-        client_secret: apiSecret,
-      }),
-    }
-  );
+  if (params.adults && params.adults > 1) {
+    url.searchParams.set('adults', String(params.adults));
+  }
+
+  const res = await fetch(url.toString());
 
   if (!res.ok) {
-    throw new Error(`Amadeus auth failed: ${res.status}`);
+    throw new Error(`SerpAPI error: ${res.status}`);
   }
 
   const data = await res.json();
-  cachedToken = {
-    access_token: data.access_token,
-    expires_at: Date.now() + (data.expires_in - 60) * 1000,
-  };
-  return cachedToken.access_token;
-}
 
-export async function amadeusGet(
-  endpoint: string,
-  params: Record<string, string>
-): Promise<unknown> {
-  const token = await getAmadeusToken();
-  const url = new URL(`https://test.api.amadeus.com${endpoint}`);
-  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
-  const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(
-      `Amadeus API error: ${res.status} ${JSON.stringify(err)}`
-    );
+  if (data.error) {
+    throw new Error(`SerpAPI: ${data.error}`);
   }
 
-  return res.json();
+  return data as SerpFlightResponse;
+}
+
+// Types for SerpAPI Google Flights response
+
+export interface SerpFlightSegment {
+  departure_airport: { name: string; id: string; time: string };
+  arrival_airport: { name: string; id: string; time: string };
+  duration: number;
+  airplane: string;
+  airline: string;
+  airline_logo: string;
+  flight_number: string;
+  travel_class: string;
+  legroom: string;
+  extensions: string[];
+}
+
+export interface SerpFlightLayover {
+  duration: number;
+  name: string;
+  id: string;
+}
+
+export interface SerpFlightOffer {
+  flights: SerpFlightSegment[];
+  layovers?: SerpFlightLayover[];
+  total_duration: number;
+  price: number;
+  type: string;
+}
+
+export interface SerpFlightResponse {
+  best_flights?: SerpFlightOffer[];
+  other_flights?: SerpFlightOffer[];
+  price_insights?: {
+    lowest_price: number;
+    price_level: string;
+    typical_price_range: [number, number];
+  };
+  search_metadata?: {
+    status: string;
+  };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { FlightOffer } from "@/hooks/useFlights";
-import { Plane, Clock, ArrowRight, Plus } from "lucide-react";
+import { Plane, Clock, Plus } from "lucide-react";
 
 interface FlightResultCardProps {
   offer: FlightOffer;
@@ -10,19 +10,20 @@ interface FlightResultCardProps {
 }
 
 function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
+  // SerpAPI returns "2023-10-03 15:10" format
+  const parts = dateStr.split(" ");
+  if (parts.length < 2) return dateStr;
+  const [hours, mins] = parts[1].split(":");
+  const h = parseInt(hours);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${h12}:${mins} ${ampm}`;
 }
 
-function formatDuration(iso: string): string {
-  const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
-  if (!match) return iso;
-  const hours = match[1] || "0";
-  const mins = match[2] || "0";
-  return `${hours}h ${mins}m`;
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m}m`;
 }
 
 export default function FlightResultCard({
@@ -36,68 +37,64 @@ export default function FlightResultCard({
         {/* Flight info */}
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <span className="text-xs font-bold bg-pin-blue/10 text-pin-blue px-2 py-0.5 rounded">
-              {offer.airline}
-            </span>
+            {offer.airlineLogo && (
+              <img
+                src={offer.airlineLogo}
+                alt={offer.airline}
+                className="w-6 h-6 object-contain"
+              />
+            )}
+            <span className="text-sm font-bold">{offer.airline}</span>
             <span className="text-xs text-muted">{offer.flightNumber}</span>
-            {offer.stops > 0 && (
+            {offer.stops === 0 ? (
+              <span className="text-xs text-pin-green font-medium">Nonstop</span>
+            ) : (
               <span className="text-xs text-coral font-medium">
                 {offer.stops} stop{offer.stops > 1 ? "s" : ""}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-3 text-sm">
             <div className="text-center">
               <p className="font-bold">{formatTime(offer.departureAt)}</p>
               <p className="text-xs text-muted">{offer.origin}</p>
             </div>
-            <div className="flex-1 flex items-center gap-1 text-muted">
-              <div className="flex-1 border-t border-dashed border-cork" />
-              <Plane size={14} />
-              <div className="flex-1 border-t border-dashed border-cork" />
+            <div className="flex-1 flex flex-col items-center gap-0.5">
+              <span className="text-xs text-muted">
+                {formatDuration(offer.totalDuration)}
+              </span>
+              <div className="w-full flex items-center gap-1 text-muted">
+                <div className="flex-1 border-t border-dashed border-cork" />
+                <Plane size={12} />
+                <div className="flex-1 border-t border-dashed border-cork" />
+              </div>
+              {offer.layovers.length > 0 && (
+                <span className="text-xs text-muted">
+                  via {offer.layovers.map((l) => l.airport).join(", ")}
+                </span>
+              )}
             </div>
             <div className="text-center">
               <p className="font-bold">{formatTime(offer.arrivalAt)}</p>
               <p className="text-xs text-muted">{offer.destination}</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-1 mt-1 text-xs text-muted">
-            <Clock size={12} />
-            {formatDuration(offer.duration)}
-          </div>
-
-          {offer.returnItinerary && (
-            <div className="mt-2 pt-2 border-t border-cork/30">
-              <p className="text-xs text-muted mb-1">Return</p>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="font-medium">{offer.destination}</span>
-                <ArrowRight size={12} className="text-muted" />
-                <span className="font-medium">{offer.origin}</span>
-                <span className="text-xs text-muted ml-1">
-                  {formatDuration(offer.returnItinerary.duration)}
-                  {offer.returnItinerary.stops > 0 &&
-                    ` · ${offer.returnItinerary.stops} stop${offer.returnItinerary.stops > 1 ? "s" : ""}`}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Price + Add button */}
         <div className="text-right flex-shrink-0">
           <p className="text-xl font-bold text-foreground">
-            ${offer.price.toFixed(0)}
+            ${offer.price}
           </p>
-          <p className="text-xs text-muted mb-2">{offer.currency}</p>
+          <p className="text-xs text-muted mb-2">{offer.type}</p>
           <button
             onClick={() => onAdd(offer)}
             disabled={adding}
             className="flex items-center gap-1 px-3 py-1.5 bg-teal text-white rounded text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             <Plus size={14} />
-            Add
+            {adding ? "Adding..." : "Add"}
           </button>
         </div>
       </div>
