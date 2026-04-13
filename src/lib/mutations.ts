@@ -202,3 +202,51 @@ export async function removeItineraryItem(tripId: string, dayId: string, itemId:
   mutate(`/api/trips/${tripId}/costs`);
   return true;
 }
+
+// Share mutations
+
+export async function generateShareToken(tripId: string): Promise<string> {
+  const res = await fetch(`/api/trips/${tripId}/share`, {
+    method: 'POST',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to generate share link');
+  }
+
+  const { shareToken } = await res.json();
+  return shareToken;
+}
+
+// Favorite mutations
+
+export async function addFavorite(tripId: string) {
+  const res = await fetch('/api/favorites', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tripId }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to favorite');
+  }
+
+  mutate('/api/favorites');
+  return res.json();
+}
+
+export async function removeFavorite(tripId: string) {
+  const res = await fetch(`/api/favorites?tripId=${tripId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to unfavorite');
+  }
+
+  mutate('/api/favorites');
+  return true;
+}

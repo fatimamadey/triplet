@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { Trip } from "@/lib/types";
-import { Calendar, Users, MapPin, Trash2 } from "lucide-react";
+import { Calendar, Users, MapPin, Trash2, Heart } from "lucide-react";
 import { deleteTrip } from "@/lib/mutations";
 import { toast } from "sonner";
 
 const pinColors = ["pin-red", "pin-blue", "pin-green", "pin-yellow"];
 const tilts = ["tilt-1", "tilt-2", "tilt-3", "tilt-4"];
 
-export default function TripCard({ trip, index }: { trip: Trip; index: number }) {
+export default function TripCard({ trip, index, isFavorite }: { trip: Trip; index: number; isFavorite?: boolean }) {
   const pinColor = pinColors[index % pinColors.length];
   const tilt = tilts[index % tilts.length];
 
@@ -98,14 +98,20 @@ export default function TripCard({ trip, index }: { trip: Trip; index: number })
             {trip.status === "ready" ? "Ready" : "Planning"}
           </span>
 
-          {/* Delete button */}
-          <button
-            onClick={handleDelete}
-            className="opacity-0 group-hover:opacity-100 p-1.5 rounded hover:bg-coral/10 text-muted hover:text-coral transition-all"
-            title="Delete trip"
-          >
-            <Trash2 size={14} />
-          </button>
+          <div className="flex items-center gap-1">
+            {isFavorite && (
+              <Heart size={14} className="text-coral fill-coral" />
+            )}
+            {!isFavorite && (
+              <button
+                onClick={handleDelete}
+                className="opacity-0 group-hover:opacity-100 p-1.5 rounded hover:bg-coral/10 text-muted hover:text-coral transition-all"
+                title="Delete trip"
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </Link>
