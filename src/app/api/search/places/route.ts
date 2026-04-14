@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
     const url = new URL('https://api.foursquare.com/v3/places/search');
     url.searchParams.set('query', query);
     url.searchParams.set('limit', '8');
+    url.searchParams.set('fields', 'fsq_id,name,location,categories,photos,distance,rating');
 
     if (near) {
       url.searchParams.set('near', near);
@@ -38,6 +39,8 @@ export async function GET(req: NextRequest) {
     });
 
     if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Foursquare API error:', res.status, errorText);
       throw new Error(`Foursquare API error: ${res.status}`);
     }
 

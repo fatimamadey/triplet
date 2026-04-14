@@ -12,17 +12,23 @@ interface FlightSearchFormProps {
     adults?: number;
   }) => void;
   isLoading: boolean;
+  defaultDepartureDate?: string;
+  defaultReturnDate?: string;
+  defaultAdults?: string;
 }
 
 export default function FlightSearchForm({
   onSearch,
   isLoading,
+  defaultDepartureDate = "",
+  defaultReturnDate = "",
+  defaultAdults = "1",
 }: FlightSearchFormProps) {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
-  const [adults, setAdults] = useState(1);
+  const [departureDate, setDepartureDate] = useState(defaultDepartureDate);
+  const [returnDate, setReturnDate] = useState(defaultReturnDate);
+  const [adults, setAdults] = useState(defaultAdults);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,7 +39,7 @@ export default function FlightSearchForm({
       destination: destination.trim().toUpperCase(),
       departureDate,
       returnDate: returnDate || undefined,
-      adults,
+      adults: parseInt(adults) || 1,
     });
   }
 
@@ -104,7 +110,7 @@ export default function FlightSearchForm({
             min={1}
             max={9}
             value={adults}
-            onChange={(e) => setAdults(parseInt(e.target.value) || 1)}
+            onChange={(e) => setAdults(e.target.value)}
             className="w-full px-3 py-2 rounded border-2 border-cork bg-paper text-foreground focus:outline-none focus:border-teal transition-colors text-sm"
           />
         </div>

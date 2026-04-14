@@ -2,28 +2,54 @@
 
 import Link from "next/link";
 import { Trip } from "@/lib/types";
-import { Calendar, Users, MapPin, Trash2, Heart } from "lucide-react";
-import { deleteTrip } from "@/lib/mutations";
+import { Calendar, Users, MapPin, Trash2, Heart, DollarSign } from "lucide-react";
+import { deleteTrip, addFavorite, removeFavorite } from "@/lib/mutations";
+import { useIsFavorited } from "@/hooks/useFavorites";
+import { useTripCosts } from "@/hooks/useTripCosts";
 import { toast } from "sonner";
 
 const pinColors = ["pin-red", "pin-blue", "pin-green", "pin-yellow"];
 const tilts = ["tilt-1", "tilt-2", "tilt-3", "tilt-4"];
 
-export default function TripCard({ trip, index, isFavorite }: { trip: Trip; index: number; isFavorite?: boolean }) {
+export default function TripCard({
+  trip,
+  index,
+  isFavorite,
+}: {
+  trip: Trip;
+  index: number;
+  isFavorite?: boolean;
+}) {
   const pinColor = pinColors[index % pinColors.length];
   const tilt = tilts[index % tilts.length];
+  const favorited = useIsFavorited(trip.id);
+  const { costs } = useTripCosts(trip.id);
 
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-
     if (!confirm("Are you sure you want to delete this trip?")) return;
-
     try {
       await deleteTrip(trip.id);
       toast.success("Trip deleted");
     } catch {
       toast.error("Failed to delete trip");
+    }
+  }
+
+  async function handleToggleFavorite(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (favorited) {
+        await removeFavorite(trip.id);
+        toast.success("Removed from favorites");
+      } else {
+        await addFavorite(trip.id);
+        toast.success("Added to favorites!");
+      }
+    } catch {
+      toast.error("Failed to update favorite");
     }
   }
 
@@ -35,11 +61,43 @@ export default function TripCard({ trip, index, isFavorite }: { trip: Trip; inde
     });
   };
 
+  const statusConfig: Record<string, { label: string; className: string }> = {
+    planning: { label: "Planning", className: "text-pin-blue border-pin-blue" },
+    ready: { label: "Ready", className: "text-leaf border-leaf" },
+    completed: { label: "Completed", className: "text-pin-green border-pin-green" },
+  };
+
+  const status = statusConfig[trip.status] || statusConfig.planning;
+
   return (
     <Link href={`/trips/${trip.id}/planning`}>
       <div
-        className={`pinned-card ${pinColor} ${tilt} p-4 pt-6 hover:shadow-lg transition-shadow cursor-pointer group`}
+        className={`pinned-card ${pinColor} ${tilt} p-4 pt-6 hover:shadow-lg transition-shadow cursor-pointer group relative`}
       >
+        {/* Hover actions - top right */}
+        <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+          <button
+            onClick={handleToggleFavorite}
+            className={`p-1.5 rounded-full shadow-sm ${
+              favorited
+                ? "bg-coral/10 text-coral"
+                : "bg-paper text-muted hover:text-coral"
+            }`}
+            title={favorited ? "Unfavorite" : "Favorite"}
+          >
+            <Heart size={14} className={favorited ? "fill-coral" : ""} />
+          </button>
+          {!isFavorite && (
+            <button
+              onClick={handleDelete}
+              className="p-1.5 rounded-full bg-paper shadow-sm text-muted hover:text-coral"
+              title="Delete trip"
+            >
+              <Trash2 size={14} />
+            </button>
+          )}
+        </div>
+
         {/* Image */}
         {trip.image_url ? (
           <div className="polaroid mb-3">
@@ -86,30 +144,17 @@ export default function TripCard({ trip, index, isFavorite }: { trip: Trip; inde
           </span>
         </div>
 
-        {/* Status badge */}
+        {/* Cost + Status row */}
         <div className="mt-3 flex items-center justify-between">
-          <span
-            className={`sticker text-xs ${
-              trip.status === "ready"
-                ? "text-leaf border-leaf"
-                : "text-pin-blue border-pin-blue"
-            }`}
-          >
-            {trip.status === "ready" ? "Ready" : "Planning"}
+          <span className={`sticker text-xs ${status.className}`}>
+            {status.label}
           </span>
-
-          <div className="flex items-center gap-1">
-            {isFavorite && (
-              <Heart size={14} className="text-coral fill-coral" />
-            )}
-            {!isFavorite && (
-              <button
-                onClick={handleDelete}
-                className="opacity-0 group-hover:opacity-100 p-1.5 rounded hover:bg-coral/10 text-muted hover:text-coral transition-all"
-                title="Delete trip"
-              >
-                <Trash2 size={14} />
-              </button>
+          <div className="flex items-center gap-2">
+            {costs && costs.grandTotal > 0 && (
+              <span className="flex items-center gap-1 text-xs font-semibold text-teal">
+                <DollarSign size={12} />
+                {costs.grandTotal.toFixed(0)}
+              </span>
             )}
           </div>
         </div>

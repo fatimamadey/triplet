@@ -28,6 +28,29 @@ export default function TripGrid() {
 
   return (
     <div className="space-y-10">
+      {/* Favorites first */}
+      {!favsLoading && favorites.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
+            <Heart size={22} className="text-coral" />
+            Favorites
+          </h2>
+          <p className="text-muted text-sm mb-4">Trips you&apos;ve saved</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {favorites.map((fav, index) =>
+              fav.trip ? (
+                <TripCard
+                  key={fav.id}
+                  trip={fav.trip}
+                  index={index}
+                  isFavorite
+                />
+              ) : null
+            )}
+          </div>
+        </div>
+      )}
+
       {/* My Trips */}
       {trips.length === 0 ? (
         <div className="pinned-card pin-blue tilt-1 max-w-md mx-auto mt-8 p-8 text-center">
@@ -45,32 +68,13 @@ export default function TripGrid() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {trips.map((trip, index) => (
-            <TripCard key={trip.id} trip={trip} index={index} />
-          ))}
-        </div>
-      )}
-
-      {/* Favorites */}
-      {!favsLoading && favorites.length > 0 && (
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-1 flex items-center gap-2">
-            <Heart size={22} className="text-coral" />
-            My Favorites
-          </h2>
-          <p className="text-muted text-sm mb-4">Trips you&apos;ve favorited</p>
+          <h2 className="text-2xl font-bold text-foreground mb-1">My Trips</h2>
+          <p className="text-muted text-sm mb-4">Your travel plans</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {favorites.map((fav, index) =>
-              fav.trip ? (
-                <TripCard
-                  key={fav.id}
-                  trip={fav.trip}
-                  index={index}
-                  isFavorite
-                />
-              ) : null
-            )}
+            {trips.map((trip, index) => (
+              <TripCard key={trip.id} trip={trip} index={index} />
+            ))}
           </div>
         </div>
       )}

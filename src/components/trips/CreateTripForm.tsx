@@ -13,7 +13,7 @@ export default function CreateTripForm() {
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [numTravelers, setNumTravelers] = useState(1);
+  const [numTravelers, setNumTravelers] = useState("1");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,7 +67,7 @@ export default function CreateTripForm() {
         image_url: imageUrl,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
-        num_travelers: numTravelers,
+        num_travelers: parseInt(numTravelers) || 1,
       });
 
       toast.success("Trip created!");
@@ -153,7 +153,7 @@ export default function CreateTripForm() {
           min={1}
           max={20}
           value={numTravelers}
-          onChange={(e) => setNumTravelers(parseInt(e.target.value) || 1)}
+          onChange={(e) => setNumTravelers(e.target.value)}
           className="w-32 px-4 py-3 rounded-lg border-2 border-cork bg-paper text-foreground focus:outline-none focus:border-teal transition-colors"
         />
       </div>

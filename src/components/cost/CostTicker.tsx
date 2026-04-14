@@ -1,30 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import { useTripCosts } from "@/hooks/useTripCosts";
 import { useTrip } from "@/hooks/useTrips";
 import useSWR from "swr";
-import { DollarSign, Users, Plane, Hotel, MapPin, ArrowRightLeft } from "lucide-react";
+import { DollarSign, Users, ArrowRightLeft } from "lucide-react";
 
 function formatCurrency(amount: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(0)}`;
+  }
 }
 
-const fetcher = (url: string) => fetch(url).then((r) => r.ok ? r.json() : null);
+const fetcher = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null));
 
 export default function CostTicker({ tripId }: { tripId: string }) {
   const { costs, isLoading } = useTripCosts(tripId);
   const { trip } = useTrip(tripId);
+  const [showLocal, setShowLocal] = useState(false);
 
-  // Fetch exchange rate if trip currency is not USD
   const tripCurrency = trip?.currency || "USD";
-  const needsConversion = tripCurrency !== "USD";
+  const canConvert = tripCurrency !== "USD";
+
   const { data: rateData } = useSWR(
-    needsConversion ? `/api/external/exchange-rate?from=USD&to=${tripCurrency}` : null,
+    canConvert && showLocal
+      ? `/api/external/exchange-rate?from=USD&to=${tripCurrency}`
+      : null,
     fetcher,
     { revalidateOnFocus: false }
   );
@@ -38,6 +46,8 @@ export default function CostTicker({ tripId }: { tripId: string }) {
   }
 
   const rate = rateData?.rate || null;
+  const displayCurrency = showLocal && rate ? tripCurrency : "USD";
+  const multiplier = showLocal && rate ? rate : 1;
 
   return (
     <div className="bg-paper border-2 border-cork rounded-lg px-4 py-3">
@@ -48,13 +58,8 @@ export default function CostTicker({ tripId }: { tripId: string }) {
           <div>
             <p className="text-xs text-muted uppercase tracking-wide">Total</p>
             <p className="text-lg font-bold text-foreground">
-              {formatCurrency(costs.grandTotal)}
+              {formatCurrency(costs.grandTotal * multiplier, displayCurrency)}
             </p>
-            {rate && (
-              <p className="text-xs text-muted">
-                ~{formatCurrency(costs.grandTotal * rate, tripCurrency)}
-              </p>
-            )}
           </div>
         </div>
 
@@ -64,43 +69,28 @@ export default function CostTicker({ tripId }: { tripId: string }) {
           <div>
             <p className="text-xs text-muted uppercase tracking-wide">Per Person</p>
             <p className="text-lg font-bold text-foreground">
-              {formatCurrency(costs.perPerson)}
+              {formatCurrency(costs.perPerson * multiplier, displayCurrency)}
             </p>
-            {rate && (
-              <p className="text-xs text-muted">
-                ~{formatCurrency(costs.perPerson * rate, tripCurrency)}
-              </p>
-            )}
           </div>
         </div>
 
-        {/* Separator */}
-        <div className="hidden sm:block w-px h-8 bg-cork" />
-
-        {/* Breakdown */}
-        <div className="flex items-center gap-4 text-sm">
-          <span className="flex items-center gap-1 text-muted">
-            <Plane size={14} />
-            {formatCurrency(costs.flights.total)}
-          </span>
-          <span className="flex items-center gap-1 text-muted">
-            <Hotel size={14} />
-            {formatCurrency(costs.hotels.total)}
-          </span>
-          <span className="flex items-center gap-1 text-muted">
-            <MapPin size={14} />
-            {formatCurrency(costs.activities.total)}
-          </span>
-        </div>
-
-        {/* Exchange rate badge */}
-        {rate && (
+        {/* Currency toggle */}
+        {canConvert && (
           <>
             <div className="hidden sm:block w-px h-8 bg-cork" />
-            <span className="flex items-center gap-1 text-xs text-muted">
+            <button
+              onClick={() => setShowLocal(!showLocal)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                showLocal
+                  ? "bg-teal text-white"
+                  : "bg-cream-dark text-muted hover:text-foreground border border-cork"
+              }`}
+            >
               <ArrowRightLeft size={12} />
-              1 USD = {rate.toFixed(2)} {tripCurrency}
-            </span>
+              {showLocal
+                ? `Showing ${tripCurrency} (1 USD = ${rate?.toFixed(2) || "..."} ${tripCurrency})`
+                : `Convert to ${tripCurrency}`}
+            </button>
           </>
         )}
       </div>

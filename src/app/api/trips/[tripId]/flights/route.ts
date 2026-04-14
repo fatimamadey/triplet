@@ -52,6 +52,8 @@ export async function POST(
       booking_url: body.booking_url || null,
       amadeus_offer_id: body.amadeus_offer_id || null,
       raw_data: body.raw_data || null,
+      transport_type: body.transport_type || 'flight',
+      notes: body.notes || null,
     })
     .select()
     .single();

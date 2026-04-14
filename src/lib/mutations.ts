@@ -64,6 +64,8 @@ export async function addFlight(tripId: string, data: {
   passengers?: number;
   amadeus_offer_id?: string;
   raw_data?: unknown;
+  transport_type?: string;
+  notes?: string;
 }) {
   const res = await fetch(`/api/trips/${tripId}/flights`, {
     method: 'POST',

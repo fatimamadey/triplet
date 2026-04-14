@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { Plane, Hotel, AlertCircle, TrendingDown } from "lucide-react";
+import { Plane, Hotel, AlertCircle, TrendingDown, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import FlightSearchForm from "@/components/planning/FlightSearchForm";
 import FlightResultCard from "@/components/planning/FlightResultCard";
 import FlightSavedCard from "@/components/planning/FlightSavedCard";
+import ManualTransportForm from "@/components/planning/ManualTransportForm";
 import HotelSearchForm from "@/components/planning/HotelSearchForm";
 import HotelResultCard from "@/components/planning/HotelResultCard";
 import HotelSavedCard from "@/components/planning/HotelSavedCard";
@@ -30,9 +31,10 @@ export default function PlanningPage() {
   const tripId = params.tripId as string;
   const { trip } = useTrip(tripId);
 
-  // Flight state
+  // Transport state
   const [flightSearchParams, setFlightSearchParams] = useState<FlightSearchParams | null>(null);
   const [addingFlightId, setAddingFlightId] = useState<string | null>(null);
+  const [showManualTransport, setShowManualTransport] = useState(false);
   const { flights } = useFlights(tripId);
   const {
     results: flightResults,
@@ -52,6 +54,15 @@ export default function PlanningPage() {
     isError: hotelSearchError,
     errorMessage: hotelErrorMessage,
   } = useHotelSearch(hotelSearchParams);
+
+  // Pre-fill search with trip data
+  function handleFlightSearch(searchParams: FlightSearchParams) {
+    setFlightSearchParams(searchParams);
+  }
+
+  function handleHotelSearch(searchParams: HotelSearchParams) {
+    setHotelSearchParams(searchParams);
+  }
 
   // Flight handlers
   async function handleAddFlight(offer: FlightOffer) {
@@ -75,12 +86,35 @@ export default function PlanningPage() {
     }
   }
 
+  async function handleAddManualTransport(data: {
+    transport_type: string;
+    origin: string;
+    destination: string;
+    airline?: string;
+    flight_number?: string;
+    departure_at?: string;
+    price?: number;
+    notes?: string;
+  }) {
+    try {
+      await addFlight(tripId, {
+        ...data,
+        currency: "USD",
+      });
+      toast.success("Transport added!");
+      setShowManualTransport(false);
+    } catch {
+      toast.error("Failed to add transport");
+      throw new Error("Failed");
+    }
+  }
+
   async function handleRemoveFlight(flightId: string) {
     try {
       await removeFlight(tripId, flightId);
-      toast.success("Flight removed");
+      toast.success("Removed");
     } catch {
-      toast.error("Failed to remove flight");
+      toast.error("Failed to remove");
     }
   }
 
@@ -116,17 +150,27 @@ export default function PlanningPage() {
 
   return (
     <div className="space-y-8">
-      {/* Flights section */}
+      {/* Transport section */}
       <div className="pinned-card pin-blue p-6 pt-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Plane size={20} className="text-pin-blue" />
-          <h2 className="text-lg font-bold">Flights</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Plane size={20} className="text-pin-blue" />
+            <h2 className="text-lg font-bold">Transport</h2>
+          </div>
+          <button
+            onClick={() => setShowManualTransport(!showManualTransport)}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-cork rounded hover:border-teal text-muted hover:text-foreground transition-colors"
+          >
+            <PlusCircle size={14} />
+            {showManualTransport ? "Search Flights Instead" : "Add Manually"}
+          </button>
         </div>
 
+        {/* Saved transport */}
         {flights.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
-              Saved Flights
+              Saved Transport
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {flights.map((flight) => (
@@ -137,13 +181,35 @@ export default function PlanningPage() {
         )}
 
         <div className="border-t border-cork/30 pt-4">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
-            Search Flights
-          </h3>
-          <FlightSearchForm onSearch={setFlightSearchParams} isLoading={flightSearchLoading} />
+          {showManualTransport ? (
+            <>
+              <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
+                Add Transport Manually
+              </h3>
+              <ManualTransportForm
+                defaultOrigin=""
+                defaultDestination={trip?.destination || ""}
+                onAdd={handleAddManualTransport}
+              />
+            </>
+          ) : (
+            <>
+              <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-3">
+                Search Flights
+              </h3>
+              <FlightSearchForm
+                onSearch={handleFlightSearch}
+                isLoading={flightSearchLoading}
+                defaultDepartureDate={trip?.start_date || ""}
+                defaultReturnDate={trip?.end_date || ""}
+                defaultAdults={String(trip?.num_travelers || 1)}
+              />
+            </>
+          )}
         </div>
 
-        {flightSearchParams && (
+        {/* Flight search results */}
+        {!showManualTransport && flightSearchParams && (
           <div className="mt-4 space-y-3">
             {flightSearchLoading && <p className="text-sm text-muted">Searching Google Flights...</p>}
             {flightSearchError && (
@@ -179,12 +245,7 @@ export default function PlanningPage() {
                   {flightResults.length} Flights Found
                 </h3>
                 {flightResults.map((offer) => (
-                  <FlightResultCard
-                    key={offer.id}
-                    offer={offer}
-                    onAdd={handleAddFlight}
-                    adding={addingFlightId === offer.id}
-                  />
+                  <FlightResultCard key={offer.id} offer={offer} onAdd={handleAddFlight} adding={addingFlightId === offer.id} />
                 ))}
               </>
             )}
@@ -218,8 +279,11 @@ export default function PlanningPage() {
           </h3>
           <HotelSearchForm
             destination={trip?.destination || ""}
-            onSearch={setHotelSearchParams}
+            onSearch={handleHotelSearch}
             isLoading={hotelSearchLoading}
+            defaultCheckIn={trip?.start_date || ""}
+            defaultCheckOut={trip?.end_date || ""}
+            defaultAdults={String(trip?.num_travelers || 2)}
           />
         </div>
 
@@ -242,14 +306,7 @@ export default function PlanningPage() {
                 </h3>
                 <div className="space-y-3">
                   {hotelResults.map((hotel) => (
-                    <HotelResultCard
-                      key={hotel.id}
-                      hotel={hotel}
-                      checkIn={hotelSearchParams.checkIn}
-                      checkOut={hotelSearchParams.checkOut}
-                      onAdd={handleAddHotel}
-                      adding={addingHotelId === hotel.id}
-                    />
+                    <HotelResultCard key={hotel.id} hotel={hotel} checkIn={hotelSearchParams.checkIn} checkOut={hotelSearchParams.checkOut} onAdd={handleAddHotel} adding={addingHotelId === hotel.id} />
                   ))}
                 </div>
               </>

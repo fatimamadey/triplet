@@ -11,7 +11,7 @@ export interface Trip {
   end_date: string | null;
   num_travelers: number;
   share_token: string | null;
-  status: 'planning' | 'ready';
+  status: 'planning' | 'ready' | 'completed';
   created_at: string;
   updated_at: string;
 }
@@ -32,6 +32,8 @@ export interface Flight {
   booking_url: string | null;
   amadeus_offer_id: string | null;
   raw_data: Record<string, unknown> | null;
+  transport_type: 'flight' | 'train' | 'bus' | 'driving';
+  notes: string | null;
   created_at: string;
 }
 

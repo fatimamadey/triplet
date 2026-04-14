@@ -13,17 +13,23 @@ interface HotelSearchFormProps {
     type?: "hotels" | "rentals";
   }) => void;
   isLoading: boolean;
+  defaultCheckIn?: string;
+  defaultCheckOut?: string;
+  defaultAdults?: string;
 }
 
 export default function HotelSearchForm({
   destination,
   onSearch,
   isLoading,
+  defaultCheckIn = "",
+  defaultCheckOut = "",
+  defaultAdults = "2",
 }: HotelSearchFormProps) {
   const [query, setQuery] = useState(destination ? `Hotels in ${destination}` : "");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [adults, setAdults] = useState(2);
+  const [checkIn, setCheckIn] = useState(defaultCheckIn);
+  const [checkOut, setCheckOut] = useState(defaultCheckOut);
+  const [adults, setAdults] = useState(defaultAdults);
   const [type, setType] = useState<"hotels" | "rentals">("hotels");
 
   function handleSubmit(e: React.FormEvent) {
@@ -34,7 +40,7 @@ export default function HotelSearchForm({
       query: query.trim(),
       checkIn,
       checkOut,
-      adults,
+      adults: parseInt(adults) || 2,
       type,
     });
   }
@@ -116,7 +122,7 @@ export default function HotelSearchForm({
             min={1}
             max={10}
             value={adults}
-            onChange={(e) => setAdults(parseInt(e.target.value) || 2)}
+            onChange={(e) => setAdults(e.target.value)}
             className="w-full px-3 py-2 rounded border-2 border-cork bg-paper text-foreground focus:outline-none focus:border-teal transition-colors text-sm"
           />
         </div>

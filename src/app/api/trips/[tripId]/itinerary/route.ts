@@ -44,6 +44,7 @@ export async function GET(
       .from('itinerary_items')
       .select('*')
       .in('day_id', dayIds)
+      .order('start_time', { ascending: true, nullsFirst: false })
       .order('sort_order', { ascending: true });
 
     items = itemsData || [];
