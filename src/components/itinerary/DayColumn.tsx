@@ -8,6 +8,7 @@ import { Plus, Calendar } from "lucide-react";
 
 interface DayColumnProps {
   day: ItineraryDay;
+  destination: string;
   onAddItem: (dayId: string, data: {
     title: string;
     category: string;
@@ -21,6 +22,7 @@ interface DayColumnProps {
 
 export default function DayColumn({
   day,
+  destination,
   onAddItem,
   onRemoveItem,
 }: DayColumnProps) {
@@ -79,6 +81,7 @@ export default function DayColumn({
       {showModal && (
         <AddItemModal
           dayLabel={`Day ${day.day_number} — ${dateLabel}`}
+          destination={destination}
           onAdd={(data) => onAddItem(day.id, data)}
           onClose={() => setShowModal(false)}
         />

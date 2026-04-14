@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { Calendar, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { useItinerary } from "@/hooks/useItinerary";
+import { useTrip } from "@/hooks/useTrips";
 import DayColumn from "@/components/itinerary/DayColumn";
 import { generateDays, addItineraryItem, removeItineraryItem } from "@/lib/mutations";
 import { useState } from "react";
@@ -12,6 +13,7 @@ export default function ItineraryPage() {
   const params = useParams();
   const tripId = params.tripId as string;
   const { days, isLoading, mutate } = useItinerary(tripId);
+  const { trip } = useTrip(tripId);
   const [generating, setGenerating] = useState(false);
 
   async function handleGenerateDays() {
@@ -110,6 +112,7 @@ export default function ItineraryPage() {
           <DayColumn
             key={day.id}
             day={day}
+            destination={trip?.destination || ""}
             onAddItem={handleAddItem}
             onRemoveItem={handleRemoveItem}
           />
