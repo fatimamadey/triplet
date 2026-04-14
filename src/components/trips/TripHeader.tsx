@@ -3,6 +3,7 @@
 import { Trip } from "@/lib/types";
 import { MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import FavoriteButton from "@/components/share/FavoriteButton";
 
 export default function TripHeader({ trip }: { trip: Trip }) {
   const formatDate = (date: string | null) => {
@@ -37,24 +38,29 @@ export default function TripHeader({ trip }: { trip: Trip }) {
           </div>
         )}
         <div className="p-5 pt-6">
-          <h1 className="text-2xl font-bold text-foreground">{trip.title}</h1>
-          <div className="flex items-center gap-4 mt-2 text-sm text-muted flex-wrap">
-            <span className="flex items-center gap-1">
-              <MapPin size={14} />
-              {trip.destination}
-              {trip.country && `, ${trip.country}`}
-            </span>
-            {trip.start_date && (
-              <span className="flex items-center gap-1">
-                <Calendar size={14} />
-                {formatDate(trip.start_date)}
-                {trip.end_date && ` — ${formatDate(trip.end_date)}`}
-              </span>
-            )}
-            <span className="flex items-center gap-1">
-              <Users size={14} />
-              {trip.num_travelers} traveler{trip.num_travelers !== 1 ? "s" : ""}
-            </span>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">{trip.title}</h1>
+              <div className="flex items-center gap-4 mt-2 text-sm text-muted flex-wrap">
+                <span className="flex items-center gap-1">
+                  <MapPin size={14} />
+                  {trip.destination}
+                  {trip.country && `, ${trip.country}`}
+                </span>
+                {trip.start_date && (
+                  <span className="flex items-center gap-1">
+                    <Calendar size={14} />
+                    {formatDate(trip.start_date)}
+                    {trip.end_date && ` — ${formatDate(trip.end_date)}`}
+                  </span>
+                )}
+                <span className="flex items-center gap-1">
+                  <Users size={14} />
+                  {trip.num_travelers} traveler{trip.num_travelers !== 1 ? "s" : ""}
+                </span>
+              </div>
+            </div>
+            <FavoriteButton tripId={trip.id} />
           </div>
         </div>
       </div>

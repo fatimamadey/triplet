@@ -13,14 +13,17 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/trips/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-teal text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal text-white rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md"
         >
-          <PlusCircle size={16} />
+          <PlusCircle size={18} />
           New Trip
         </Link>
       </div>
 
-      {/* Trip grid */}
+      {/* Washi tape divider */}
+      <div className="washi-tape mb-8 -mx-2" />
+
+      {/* Trip grid + favorites */}
       <TripGrid />
     </div>
   );

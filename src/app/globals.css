@@ -107,3 +107,51 @@ body {
   border: 2px solid currentColor;
   transform: rotate(-2deg);
 }
+
+/* Smooth transitions */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cork-light);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-cork);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cork-dark);
+}
+
+/* Focus ring for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}
+
+/* Pinned card hover lift */
+.pinned-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.pinned-card:hover {
+  box-shadow:
+    3px 5px 12px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .tilt-1, .tilt-2, .tilt-3, .tilt-4 {
+    transform: none;
+  }
+  .pinned-card::before {
+    width: 12px;
+    height: 12px;
+    top: -4px;
+  }
+}

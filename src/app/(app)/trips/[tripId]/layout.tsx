@@ -5,6 +5,7 @@ import { useTrip } from "@/hooks/useTrips";
 import TripHeader from "@/components/trips/TripHeader";
 import TripTabNav from "@/components/trips/TripTabNav";
 import CostTicker from "@/components/cost/CostTicker";
+import CostBreakdown from "@/components/cost/CostBreakdown";
 import { Loader2 } from "lucide-react";
 
 export default function TripDetailLayout({
@@ -44,6 +45,9 @@ export default function TripDetailLayout({
 
       {/* Tab content */}
       <div>{children}</div>
+
+      {/* Cost breakdown chart */}
+      <CostBreakdown tripId={tripId} />
     </div>
   );
 }
