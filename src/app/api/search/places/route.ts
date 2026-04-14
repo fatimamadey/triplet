@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUserId, unauthorized } from '@/lib/auth';
 
+// Uses SerpAPI Google Local Results instead of Foursquare
 export async function GET(req: NextRequest) {
   const userId = await getAuthUserId();
   if (!userId) return unauthorized();
@@ -13,58 +14,51 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'query is required' }, { status: 400 });
   }
 
-  const apiKey = process.env.FOURSQUARE_API_KEY;
+  const apiKey = process.env.SERPAPI_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: 'Foursquare API not configured' },
+      { error: 'Search API not configured' },
       { status: 503 }
     );
   }
 
   try {
-    const url = new URL('https://api.foursquare.com/v3/places/search');
-    url.searchParams.set('query', query);
-    url.searchParams.set('limit', '8');
-    url.searchParams.set('fields', 'fsq_id,name,location,categories,photos,distance,rating');
+    const searchQuery = near ? `${query} in ${near}` : query;
+    const url = new URL('https://serpapi.com/search');
+    url.searchParams.set('engine', 'google_local');
+    url.searchParams.set('q', searchQuery);
+    url.searchParams.set('api_key', apiKey);
+    url.searchParams.set('hl', 'en');
 
-    if (near) {
-      url.searchParams.set('near', near);
-    }
-
-    const res = await fetch(url.toString(), {
-      headers: {
-        Authorization: apiKey,
-        Accept: 'application/json',
-      },
-    });
+    const res = await fetch(url.toString());
 
     if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Foursquare API error:', res.status, errorText);
-      throw new Error(`Foursquare API error: ${res.status}`);
+      throw new Error(`SerpAPI error: ${res.status}`);
     }
 
     const data = await res.json();
 
-    const places = (data.results || []).map((p: {
-      fsq_id: string;
-      name: string;
-      location?: { formatted_address?: string; address?: string; locality?: string };
-      categories?: Array<{ name: string; short_name: string }>;
-      photos?: Array<{ prefix: string; suffix: string }>;
-      distance?: number;
-      rating?: number;
-    }) => ({
-      id: p.fsq_id,
-      name: p.name,
-      address: p.location?.formatted_address || p.location?.address || null,
-      locality: p.location?.locality || null,
-      categories: (p.categories || []).map((c) => c.short_name || c.name),
-      photo: p.photos?.[0]
-        ? `${p.photos[0].prefix}200x200${p.photos[0].suffix}`
-        : null,
-      distance: p.distance || null,
+    if (data.error) {
+      throw new Error(`SerpAPI: ${data.error}`);
+    }
+
+    const places = (data.local_results || []).slice(0, 8).map((p: {
+      place_id: string;
+      title: string;
+      address: string;
+      rating: number;
+      reviews: number;
+      type: string;
+      thumbnail: string;
+      gps_coordinates?: { latitude: number; longitude: number };
+    }, i: number) => ({
+      id: p.place_id || `place-${i}`,
+      name: p.title,
+      address: p.address || null,
+      categories: p.type ? [p.type] : [],
+      photo: p.thumbnail || null,
       rating: p.rating || null,
+      reviews: p.reviews || 0,
     }));
 
     return NextResponse.json(places);
