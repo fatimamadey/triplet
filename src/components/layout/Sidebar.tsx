@@ -42,13 +42,13 @@ export default function Sidebar() {
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-40
-          w-64 bg-cork-dark text-cream flex flex-col
+          w-64 bg-sidebar-bg text-sidebar-text flex flex-col
           transform transition-transform duration-200
           ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-cork">
+        <div className="p-6 border-b border-sidebar-text/15">
           <Link href="/dashboard" className="flex items-center gap-3">
             <Map size={28} className="text-sunshine" />
             <span className="text-3xl font-handwritten font-bold tracking-tight">Triplet</span>
@@ -69,8 +69,8 @@ export default function Sidebar() {
                   flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium
                   transition-colors duration-150
                   ${isActive
-                    ? "bg-cork text-cream"
-                    : "text-cream-dark hover:bg-cork/50 hover:text-cream"
+                    ? "bg-sidebar-text/15 text-sidebar-text"
+                    : "text-sidebar-text/70 hover:bg-sidebar-text/10 hover:text-sidebar-text"
                   }
                 `}
               >
@@ -82,12 +82,12 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom section */}
-        <div className="p-4 border-t border-cork space-y-3">
+        <div className="p-4 border-t border-sidebar-text/15 space-y-3">
           {/* Theme toggle */}
           {mounted && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-sm font-medium text-cream-dark hover:bg-cork/50 hover:text-cream transition-colors"
+              className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-sm font-medium text-sidebar-text/70 hover:bg-sidebar-text/10 hover:text-sidebar-text transition-colors"
             >
               {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
               {theme === "dark" ? "Light Mode" : "Dark Mode"}

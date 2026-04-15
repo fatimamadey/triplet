@@ -1,32 +1,70 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
 
+/* ===== CSS CUSTOM PROPERTIES (switch with .dark) ===== */
+:root {
+  --cork: #d4c4a8;
+  --cork-light: #f0e8d8;
+  --cork-dark: #b8a585;
+  --cream: #faf6ef;
+  --cream-dark: #efe7d6;
+  --paper: #fffef9;
+  --foreground: #1a120b;
+  --muted: #6b5a48;
+  --border: #c4a882;
+
+  --pin-red: #d63031;
+  --pin-blue: #2980b9;
+  --pin-green: #27ae60;
+  --pin-yellow: #f39c12;
+  --teal: #00b894;
+  --coral: #e74c3c;
+  --sunshine: #fdcb6e;
+  --leaf: #00b894;
+
+  --sidebar-bg: #b8a585;
+  --sidebar-text: #faf6ef;
+}
+
+.dark {
+  --cork: #3d3529;
+  --cork-light: #1c1814;
+  --cork-dark: #524638;
+  --cream: #2c261e;
+  --cream-dark: #3a3228;
+  --paper: #2a241c;
+  --foreground: #f5efe5;
+  --muted: #bfae96;
+  --border: #524638;
+
+  --sidebar-bg: #15120e;
+  --sidebar-text: #f5efe5;
+}
+
+/* ===== TAILWIND THEME — maps to CSS vars ===== */
 @theme inline {
-  /* ===== LIGHT THEME (default) ===== */
-  --color-cork: #d4c4a8;
-  --color-cork-light: #f0e8d8;
-  --color-cork-dark: #b8a585;
-  --color-cream: #faf6ef;
-  --color-cream-dark: #efe7d6;
-  --color-paper: #fffef9;
+  --color-cork: var(--cork);
+  --color-cork-light: var(--cork-light);
+  --color-cork-dark: var(--cork-dark);
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  --color-paper: var(--paper);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
 
-  /* Vibrant accent colors */
-  --color-pin-red: #d63031;
-  --color-pin-blue: #2980b9;
-  --color-pin-green: #27ae60;
-  --color-pin-yellow: #f39c12;
-  --color-teal: #00b894;
-  --color-coral: #e74c3c;
-  --color-sunshine: #fdcb6e;
-  --color-leaf: #00b894;
+  --color-pin-red: var(--pin-red);
+  --color-pin-blue: var(--pin-blue);
+  --color-pin-green: var(--pin-green);
+  --color-pin-yellow: var(--pin-yellow);
+  --color-teal: var(--teal);
+  --color-coral: var(--coral);
+  --color-sunshine: var(--sunshine);
+  --color-leaf: var(--leaf);
 
-  /* Semantic colors */
-  --color-background: var(--color-cork-light);
-  --color-foreground: #1a120b;
-  --color-muted: #6b5a48;
-  --color-border: #c4a882;
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-text: var(--sidebar-text);
 
-  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-handwritten: 'Caveat', cursive;
@@ -34,46 +72,24 @@
 
 /* ===== BASE STYLES ===== */
 body {
-  background: var(--color-cork-light);
-  color: var(--color-foreground);
+  background: var(--cork-light);
+  color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ===== DARK MODE ===== */
-.dark {
-  --color-cork: #3d3529;
-  --color-cork-light: #1c1814;
-  --color-cork-dark: #524638;
-  --color-cream: #2c261e;
-  --color-cream-dark: #3a3228;
-  --color-paper: #2a241c;
-  --color-background: #1c1814;
-  --color-foreground: #f5efe5;
-  --color-muted: #bfae96;
-  --color-border: #524638;
-}
-
 /* ===== CORK BOARD BACKGROUND ===== */
 .cork-bg {
-  background-color: var(--color-cork-light);
+  background-color: var(--cork-light);
   background-image:
     url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
     radial-gradient(ellipse at 15% 25%, rgba(255, 235, 200, 0.2) 0%, transparent 50%),
     radial-gradient(ellipse at 85% 75%, rgba(255, 235, 200, 0.15) 0%, transparent 50%);
 }
 
-.dark .cork-bg {
-  background-color: var(--color-cork-light);
-  background-image:
-    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 15% 25%, rgba(80, 60, 30, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 75%, rgba(80, 60, 30, 0.1) 0%, transparent 50%);
-}
-
 /* ===== PINNED CARD ===== */
 .pinned-card {
-  background: var(--color-paper);
+  background: var(--paper);
   border-radius: 1px;
   position: relative;
   box-shadow:
@@ -84,8 +100,8 @@ body {
 
 .dark .pinned-card {
   box-shadow:
-    1px 2px 3px rgba(0, 0, 0, 0.2),
-    2px 4px 10px rgba(0, 0, 0, 0.3);
+    1px 2px 3px rgba(0, 0, 0, 0.3),
+    2px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .pinned-card:hover {
@@ -139,14 +155,10 @@ body {
 
 /* ===== POLAROID FRAME ===== */
 .polaroid {
-  background: white;
+  background: var(--paper);
   padding: 6px 6px 28px 6px;
   box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.dark .polaroid {
-  background: #2a241c;
-  border-color: rgba(255, 255, 255, 0.05);
 }
 
 /* ===== WASHI TAPE ===== */
@@ -180,13 +192,13 @@ body {
 
 /* ===== CUSTOM SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--color-cork-light); }
-::-webkit-scrollbar-thumb { background: var(--color-cork-dark); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-cork); }
+::-webkit-scrollbar-track { background: var(--cork-light); }
+::-webkit-scrollbar-thumb { background: var(--cork-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cork); }
 
 /* ===== FOCUS RING ===== */
 :focus-visible {
-  outline: 2px solid var(--color-teal);
+  outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
 
