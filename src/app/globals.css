@@ -1,7 +1,7 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
+@import "tailwindcss";
 
-/* ===== CSS CUSTOM PROPERTIES (switch with .dark) ===== */
+/* ===== CSS CUSTOM PROPERTIES ===== */
 :root {
   --cork: #d4c4a8;
   --cork-light: #f0e8d8;
@@ -9,19 +9,9 @@
   --cream: #faf6ef;
   --cream-dark: #efe7d6;
   --paper: #fffef9;
-  --foreground: #1a120b;
+  --fg: #1a120b;
   --muted: #6b5a48;
   --border: #c4a882;
-
-  --pin-red: #d63031;
-  --pin-blue: #2980b9;
-  --pin-green: #27ae60;
-  --pin-yellow: #f39c12;
-  --teal: #00b894;
-  --coral: #e74c3c;
-  --sunshine: #fdcb6e;
-  --leaf: #00b894;
-
   --sidebar-bg: #b8a585;
   --sidebar-text: #faf6ef;
 }
@@ -33,15 +23,14 @@
   --cream: #2c261e;
   --cream-dark: #3a3228;
   --paper: #2a241c;
-  --foreground: #f5efe5;
+  --fg: #f5efe5;
   --muted: #bfae96;
   --border: #524638;
-
   --sidebar-bg: #15120e;
   --sidebar-text: #f5efe5;
 }
 
-/* ===== TAILWIND THEME — maps to CSS vars ===== */
+/* ===== TAILWIND THEME ===== */
 @theme inline {
   --color-cork: var(--cork);
   --color-cork-light: var(--cork-light);
@@ -49,33 +38,37 @@
   --color-cream: var(--cream);
   --color-cream-dark: var(--cream-dark);
   --color-paper: var(--paper);
-  --color-foreground: var(--foreground);
+  --color-foreground: var(--fg);
   --color-muted: var(--muted);
   --color-border: var(--border);
-
-  --color-pin-red: var(--pin-red);
-  --color-pin-blue: var(--pin-blue);
-  --color-pin-green: var(--pin-green);
-  --color-pin-yellow: var(--pin-yellow);
-  --color-teal: var(--teal);
-  --color-coral: var(--coral);
-  --color-sunshine: var(--sunshine);
-  --color-leaf: var(--leaf);
-
   --color-sidebar-bg: var(--sidebar-bg);
   --color-sidebar-text: var(--sidebar-text);
+
+  --color-pin-red: #d63031;
+  --color-pin-blue: #2980b9;
+  --color-pin-green: #27ae60;
+  --color-pin-yellow: #f39c12;
+  --color-teal: #00b894;
+  --color-coral: #e74c3c;
+  --color-sunshine: #fdcb6e;
+  --color-leaf: #00b894;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-handwritten: 'Caveat', cursive;
 }
 
-/* ===== BASE STYLES ===== */
+/* ===== BASE ===== */
 body {
   background: var(--cork-light);
-  color: var(--foreground);
+  color: var(--fg);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Force text color on all headings and paragraphs for dark mode */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--fg);
 }
 
 /* ===== CORK BOARD BACKGROUND ===== */
@@ -90,6 +83,7 @@ body {
 /* ===== PINNED CARD ===== */
 .pinned-card {
   background: var(--paper);
+  color: var(--fg);
   border-radius: 1px;
   position: relative;
   box-shadow:
@@ -186,6 +180,11 @@ body {
 
 /* ===== HANDWRITTEN ACCENT ===== */
 .font-handwritten { font-family: var(--font-handwritten); }
+
+/* ===== FORM INPUTS IN DARK MODE ===== */
+.dark input, .dark textarea, .dark select, .dark [type="date"], .dark [type="time"], .dark [type="number"], .dark [type="datetime-local"] {
+  color-scheme: dark;
+}
 
 /* ===== SMOOTH TRANSITIONS ===== */
 * { scroll-behavior: smooth; }
