@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
 
 @theme inline {
-  /* Cork board / bulletin board palette — LIGHTER */
-  --color-cork: #d4be9c;
-  --color-cork-light: #e8dcc8;
-  --color-cork-dark: #b8a07a;
-  --color-cream: #fdf6e3;
-  --color-cream-dark: #f0e4cc;
+  /* ===== LIGHT THEME (default) ===== */
+  --color-cork: #d4c4a8;
+  --color-cork-light: #f0e8d8;
+  --color-cork-dark: #b8a585;
+  --color-cream: #faf6ef;
+  --color-cream-dark: #efe7d6;
   --color-paper: #fffef9;
 
   /* Vibrant accent colors */
@@ -23,7 +23,7 @@
   /* Semantic colors */
   --color-background: var(--color-cork-light);
   --color-foreground: #1a120b;
-  --color-muted: #7a6652;
+  --color-muted: #6b5a48;
   --color-border: #c4a882;
 
   /* Fonts */
@@ -32,51 +32,72 @@
   --font-handwritten: 'Caveat', cursive;
 }
 
+/* ===== BASE STYLES ===== */
 body {
   background: var(--color-cork-light);
   color: var(--color-foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ===== DARK MODE ===== */
+.dark {
+  --color-cork: #3a3228;
+  --color-cork-light: #1e1a15;
+  --color-cork-dark: #4a3f32;
+  --color-cream: #2a241c;
+  --color-cream-dark: #332c22;
+  --color-paper: #252018;
+  --color-background: #1e1a15;
+  --color-foreground: #e8dcc8;
+  --color-muted: #9a8a74;
+  --color-border: #4a3f32;
+}
+
+.dark body,
+.dark {
+  background: var(--color-cork-light);
+  color: var(--color-foreground);
 }
 
 /* ===== CORK BOARD BACKGROUND ===== */
 .cork-bg {
-  background-color: #e2d1b5;
+  background-color: var(--color-cork-light);
   background-image:
-    /* Subtle grain texture */
-    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
-    /* Warm light spots */
-    radial-gradient(ellipse at 15% 25%, rgba(255, 235, 200, 0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 75%, rgba(255, 235, 200, 0.25) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(200, 170, 130, 0.1) 0%, transparent 60%);
-  /* Soft wood-frame border effect */
-  box-shadow: inset 0 0 80px rgba(139, 115, 85, 0.12);
+    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 25%, rgba(255, 235, 200, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(255, 235, 200, 0.15) 0%, transparent 50%);
 }
 
-/* ===== PINNED CARD — PAPER TEXTURE ===== */
+.dark .cork-bg {
+  background-color: var(--color-cork-light);
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 25%, rgba(80, 60, 30, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(80, 60, 30, 0.1) 0%, transparent 50%);
+}
+
+/* ===== PINNED CARD ===== */
 .pinned-card {
   background: var(--color-paper);
   border-radius: 1px;
   position: relative;
-  /* Layered shadow for depth: paper lift + soft ambient */
   box-shadow:
     1px 2px 3px rgba(0, 0, 0, 0.08),
-    2px 4px 10px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(0, 0, 0, 0.02);
-  /* Subtle paper texture via gradient noise */
-  background-image:
-    linear-gradient(135deg, rgba(0,0,0,0.01) 25%, transparent 25%),
-    linear-gradient(225deg, rgba(0,0,0,0.01) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(0,0,0,0.01) 25%, transparent 25%),
-    linear-gradient(45deg, rgba(0,0,0,0.01) 25%, transparent 25%);
-  background-size: 4px 4px;
+    2px 4px 10px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.dark .pinned-card {
+  box-shadow:
+    1px 2px 3px rgba(0, 0, 0, 0.2),
+    2px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .pinned-card:hover {
   box-shadow:
     2px 4px 6px rgba(0, 0, 0, 0.1),
-    3px 6px 16px rgba(0, 0, 0, 0.12),
-    0 0 0 1px rgba(0, 0, 0, 0.03);
+    3px 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 /* ===== REALISTIC THUMBTACKS ===== */
@@ -90,17 +111,13 @@ body {
   height: 20px;
   border-radius: 50%;
   z-index: 10;
-  /* 3D tack shape */
   box-shadow:
-    /* Inner highlight — top-left light catch */
     inset -2px -2px 3px rgba(0, 0, 0, 0.3),
     inset 2px 2px 3px rgba(255, 255, 255, 0.4),
-    /* Drop shadow beneath the tack */
     0 3px 5px rgba(0, 0, 0, 0.35),
     0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Tack pin "spike" shadow on card */
 .pinned-card::after {
   content: '';
   position: absolute;
@@ -115,18 +132,10 @@ body {
   z-index: 9;
 }
 
-.pin-red::before {
-  background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b 60%, #962d22);
-}
-.pin-blue::before {
-  background: radial-gradient(circle at 35% 35%, #74b9ff, #2980b9 60%, #1e6fa0);
-}
-.pin-green::before {
-  background: radial-gradient(circle at 35% 35%, #55efc4, #27ae60 60%, #1e8449);
-}
-.pin-yellow::before {
-  background: radial-gradient(circle at 35% 35%, #ffeaa7, #f39c12 60%, #d68910);
-}
+.pin-red::before { background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b 60%, #962d22); }
+.pin-blue::before { background: radial-gradient(circle at 35% 35%, #74b9ff, #2980b9 60%, #1e6fa0); }
+.pin-green::before { background: radial-gradient(circle at 35% 35%, #55efc4, #27ae60 60%, #1e8449); }
+.pin-yellow::before { background: radial-gradient(circle at 35% 35%, #ffeaa7, #f39c12 60%, #d68910); }
 
 /* ===== CARD TILTS ===== */
 .tilt-1 { transform: rotate(-1.2deg); }
@@ -138,32 +147,20 @@ body {
 .polaroid {
   background: white;
   padding: 6px 6px 28px 6px;
-  box-shadow:
-    2px 3px 8px rgba(0, 0, 0, 0.15),
-    0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.dark .polaroid {
+  background: #2a241c;
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 /* ===== WASHI TAPE ===== */
 .washi-tape {
-  background: linear-gradient(
-    135deg,
-    rgba(0, 184, 148, 0.35) 0%,
-    rgba(0, 184, 148, 0.25) 50%,
-    rgba(0, 184, 148, 0.35) 100%
-  );
-  height: 20px;
+  background: linear-gradient(135deg, rgba(0, 184, 148, 0.25) 0%, rgba(0, 184, 148, 0.15) 100%);
+  height: 16px;
   transform: rotate(-0.5deg);
   border-radius: 1px;
-  /* Tape texture — semi-transparent with slight pattern */
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 4px,
-    rgba(255, 255, 255, 0.15) 4px,
-    rgba(255, 255, 255, 0.15) 5px
-  );
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* ===== TRAVEL STICKER BADGE ===== */
@@ -173,38 +170,25 @@ body {
   gap: 4px;
   padding: 3px 10px;
   border-radius: 12px;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.05em;
   border: 2px solid currentColor;
   transform: rotate(-2deg);
   text-transform: uppercase;
 }
 
 /* ===== HANDWRITTEN ACCENT ===== */
-.font-handwritten {
-  font-family: var(--font-handwritten);
-}
+.font-handwritten { font-family: var(--font-handwritten); }
 
 /* ===== SMOOTH TRANSITIONS ===== */
-* {
-  scroll-behavior: smooth;
-}
+* { scroll-behavior: smooth; }
 
 /* ===== CUSTOM SCROLLBAR ===== */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-cork-light);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-cork-dark);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #a08060;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-cork-light); }
+::-webkit-scrollbar-thumb { background: var(--color-cork-dark); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-cork); }
 
 /* ===== FOCUS RING ===== */
 :focus-visible {
@@ -214,12 +198,6 @@ body {
 
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 640px) {
-  .tilt-1, .tilt-2, .tilt-3, .tilt-4 {
-    transform: none;
-  }
-  .pinned-card::before {
-    width: 16px;
-    height: 16px;
-    top: -6px;
-  }
+  .tilt-1, .tilt-2, .tilt-3, .tilt-4 { transform: none; }
+  .pinned-card::before { width: 16px; height: 16px; top: -6px; }
 }

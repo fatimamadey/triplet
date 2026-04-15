@@ -92,8 +92,8 @@ export async function POST(
       );
     }
 
-    const start = new Date(trip.start_date);
-    const end = new Date(trip.end_date);
+    const start = new Date(trip.start_date + 'T00:00:00');
+    const end = new Date(trip.end_date + 'T00:00:00');
     const dayCount = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
     // Delete existing days first

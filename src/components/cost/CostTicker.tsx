@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTripCosts } from "@/hooks/useTripCosts";
 import { useTrip } from "@/hooks/useTrips";
 import useSWR from "swr";
-import { DollarSign, Users, ArrowRightLeft } from "lucide-react";
+import { DollarSign, Users, ArrowRightLeft, Plane, Hotel, MapPin } from "lucide-react";
 
 function formatCurrency(amount: number, currency = "USD"): string {
   try {
@@ -74,6 +74,25 @@ export default function CostTicker({ tripId }: { tripId: string }) {
           </div>
         </div>
 
+        {/* Separator */}
+        <div className="hidden sm:block w-px h-8 bg-cork" />
+
+        {/* Mini breakdown */}
+        <div className="flex items-center gap-4 text-sm">
+          <span className="flex items-center gap-1 text-muted" title="Flights">
+            <Plane size={14} />
+            {formatCurrency(costs.flights.total * multiplier, displayCurrency)}
+          </span>
+          <span className="flex items-center gap-1 text-muted" title="Hotels">
+            <Hotel size={14} />
+            {formatCurrency(costs.hotels.total * multiplier, displayCurrency)}
+          </span>
+          <span className="flex items-center gap-1 text-muted" title="Activities">
+            <MapPin size={14} />
+            {formatCurrency(costs.activities.total * multiplier, displayCurrency)}
+          </span>
+        </div>
+
         {/* Currency toggle */}
         {canConvert && (
           <>
@@ -87,9 +106,7 @@ export default function CostTicker({ tripId }: { tripId: string }) {
               }`}
             >
               <ArrowRightLeft size={12} />
-              {showLocal
-                ? `Showing ${tripCurrency} (1 USD = ${rate?.toFixed(2) || "..."} ${tripCurrency})`
-                : `Convert to ${tripCurrency}`}
+              {showLocal ? tripCurrency : `→ ${tripCurrency}`}
             </button>
           </>
         )}

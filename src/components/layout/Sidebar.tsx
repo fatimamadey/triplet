@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { Map, LayoutDashboard, PlusCircle, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { Map, LayoutDashboard, PlusCircle, Menu, X, Sun, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -14,6 +15,10 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   return (
     <>
@@ -53,7 +58,7 @@ export default function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            const isActive = pathname === item.href;
             const Icon = item.icon;
             return (
               <Link
@@ -76,8 +81,20 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* User button */}
-        <div className="p-4 border-t border-cork">
+        {/* Bottom section */}
+        <div className="p-4 border-t border-cork space-y-3">
+          {/* Theme toggle */}
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-sm font-medium text-cream-dark hover:bg-cork/50 hover:text-cream transition-colors"
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
+            </button>
+          )}
+
+          {/* User button */}
           <div className="flex items-center gap-3 px-4 py-2">
             <UserButton />
             <span className="text-sm text-cream-dark">Account</span>

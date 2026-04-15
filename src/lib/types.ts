@@ -120,4 +120,5 @@ export interface CreateTripInput {
   start_date?: string;
   end_date?: string;
   num_travelers?: number;
+  status?: string;
 }

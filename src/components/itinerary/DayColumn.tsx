@@ -58,15 +58,21 @@ export default function DayColumn({
       </div>
 
       {/* Items */}
-      <div className="space-y-2">
-        {(day.items || []).map((item) => (
-          <ItineraryItemCard
-            key={item.id}
-            item={item}
-            onRemove={(itemId) => onRemoveItem(day.id, itemId)}
-          />
-        ))}
-      </div>
+      {(day.items || []).length === 0 ? (
+        <p className="text-xs text-muted italic py-2">
+          No activities yet. Add restaurants, sightseeing, and more!
+        </p>
+      ) : (
+        <div className="space-y-2">
+          {(day.items || []).map((item) => (
+            <ItineraryItemCard
+              key={item.id}
+              item={item}
+              onRemove={(itemId) => onRemoveItem(day.id, itemId)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Add button */}
       <button

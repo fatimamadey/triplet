@@ -108,8 +108,8 @@ export default function TripCard({
             />
           </div>
         ) : (
-          <div className="bg-cream-dark rounded h-32 mb-3 flex items-center justify-center">
-            <MapPin size={32} className="text-muted" />
+          <div className="rounded h-32 mb-3 flex items-center justify-center bg-gradient-to-br from-teal/20 via-pin-blue/15 to-sunshine/20">
+            <MapPin size={32} className="text-teal/50" />
           </div>
         )}
 
