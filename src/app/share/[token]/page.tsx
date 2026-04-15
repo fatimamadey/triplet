@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import FavoriteButton from "@/components/share/FavoriteButton";
 import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface SharedTripData {
   trip: {
@@ -87,21 +88,57 @@ export default function SharedTripPage() {
     fetchTrip();
   }, [token]);
 
+  const navBar = (
+    <nav className="bg-paper border-b border-cork/30 sticky top-0 z-30">
+      <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <Map size={22} className="text-teal" />
+          <span className="text-xl font-handwritten font-bold text-foreground">Triplet</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          {isSignedIn ? (
+            <Link href="/dashboard" className="text-sm text-muted hover:text-foreground transition-colors">
+              My Trips
+            </Link>
+          ) : (
+            <>
+              <Link href="/sign-in" className="text-sm text-muted hover:text-foreground transition-colors">
+                Sign In
+              </Link>
+              <Link href="/sign-up" className="px-4 py-1.5 bg-teal text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
+                Sign Up to Save Trips
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+
   if (loading) {
     return (
-      <div className="min-h-screen cork-bg flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-muted" />
+      <div className="min-h-screen cork-bg">
+        {navBar}
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-muted" />
+        </div>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="min-h-screen cork-bg flex items-center justify-center p-4">
-        <div className="pinned-card pin-red p-8 text-center max-w-md">
-          <Map size={48} className="mx-auto text-muted mb-4" />
-          <h1 className="text-xl font-bold mb-2">Trip Not Found</h1>
-          <p className="text-muted">{error || "This share link is invalid."}</p>
+      <div className="min-h-screen cork-bg">
+        {navBar}
+        <div className="flex items-center justify-center p-8">
+          <div className="pinned-card pin-red p-8 text-center max-w-md">
+            <Map size={48} className="mx-auto text-muted mb-4" />
+            <h1 className="text-xl font-bold mb-2">Trip Not Found</h1>
+            <p className="text-muted mb-4">{error || "This share link is invalid."}</p>
+            <Link href="/sign-up" className="inline-flex items-center gap-2 px-5 py-2 bg-teal text-white rounded-lg text-sm font-medium hover:opacity-90">
+              Sign up to create your own trips
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -114,6 +151,8 @@ export default function SharedTripPage() {
 
   return (
     <div className="min-h-screen cork-bg">
+      {navBar}
+
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="pinned-card pin-red overflow-hidden mb-6">
