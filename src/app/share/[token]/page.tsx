@@ -193,7 +193,7 @@ export default function SharedTripPage() {
         {/* Flights */}
         {flights.length > 0 && (
           <div className="pinned-card pin-blue p-5 pt-7 mb-6">
-            <h2 className="flex items-center gap-2 text-lg font-bold mb-3"><Plane size={18} className="text-pin-blue" />Flights</h2>
+            <h2 className="flex items-center gap-2 section-header mb-3"><Plane size={18} className="text-pin-blue" />Flights</h2>
             <div className="space-y-2">
               {flights.map((f, i) => (
                 <div key={i} className="flex items-center justify-between bg-cream-dark rounded p-3 text-sm">
@@ -211,7 +211,7 @@ export default function SharedTripPage() {
         {/* Hotels */}
         {hotels.length > 0 && (
           <div className="pinned-card pin-green p-5 pt-7 mb-6">
-            <h2 className="flex items-center gap-2 text-lg font-bold mb-3"><Hotel size={18} className="text-pin-green" />Hotels</h2>
+            <h2 className="flex items-center gap-2 section-header mb-3"><Hotel size={18} className="text-pin-green" />Hotels</h2>
             <div className="space-y-2">
               {hotels.map((h, i) => (
                 <div key={i} className="flex items-center gap-3 bg-cream-dark rounded p-3">
@@ -233,7 +233,7 @@ export default function SharedTripPage() {
         {/* Itinerary */}
         {itinerary.length > 0 && (
           <div className="pinned-card pin-yellow p-5 pt-7">
-            <h2 className="flex items-center gap-2 text-lg font-bold mb-4"><Calendar size={18} className="text-pin-yellow" />Itinerary</h2>
+            <h2 className="flex items-center gap-2 section-header mb-4"><Calendar size={18} className="text-pin-yellow" />Itinerary</h2>
             <div className="space-y-4">
               {itinerary.map((day) => (
                 <div key={day.day_number}>

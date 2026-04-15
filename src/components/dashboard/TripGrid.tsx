@@ -53,11 +53,11 @@ export default function TripGrid() {
 
       {/* My Trips */}
       {trips.length === 0 ? (
-        <div className="pinned-card pin-blue tilt-1 max-w-md mx-auto mt-8 p-8 text-center">
-          <Map size={48} className="mx-auto text-muted mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No trips yet</h2>
-          <p className="text-muted mb-6">
-            Create your first trip to start planning your adventure!
+        <div className="sticky-note max-w-md mx-auto mt-8 text-center rounded-sm">
+          <Map size={48} className="mx-auto text-muted/50 mb-4" />
+          <h2 className="text-2xl mb-2">Where to next?</h2>
+          <p className="text-lg text-muted mb-6">
+            Pin your first adventure to the board!
           </p>
           <Link
             href="/trips/new"

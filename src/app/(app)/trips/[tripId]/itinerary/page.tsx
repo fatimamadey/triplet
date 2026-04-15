@@ -65,11 +65,11 @@ export default function ItineraryPage() {
   // No days yet — show generate prompt
   if (days.length === 0) {
     return (
-      <div className="pinned-card pin-yellow p-8 pt-10 max-w-md mx-auto text-center">
-        <Calendar size={48} className="mx-auto text-muted mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No itinerary yet</h2>
-        <p className="text-muted mb-6 text-sm">
-          Generate days from your trip dates, then add activities to each day.
+      <div className="sticky-note max-w-md mx-auto text-center rounded-sm">
+        <Calendar size={48} className="mx-auto text-muted/50 mb-4" />
+        <h2 className="text-2xl mb-2">No itinerary yet!</h2>
+        <p className="text-lg text-muted mb-6">
+          Let&apos;s plan some adventures...
         </p>
         <button
           onClick={handleGenerateDays}
@@ -91,7 +91,7 @@ export default function ItineraryPage() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold flex items-center gap-2">
+        <h2 className="section-header flex items-center gap-2">
           <Calendar size={20} className="text-pin-yellow" />
           Day-by-Day Itinerary
         </h2>

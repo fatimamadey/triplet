@@ -157,7 +157,7 @@ export default function PlanningPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Plane size={20} className="text-pin-blue" />
-            <h2 className="text-lg font-bold">Transport</h2>
+            <h2 className="section-header">Transport</h2>
           </div>
           <button
             onClick={() => setShowManualTransport(!showManualTransport)}
@@ -259,7 +259,7 @@ export default function PlanningPage() {
       <div className="pinned-card pin-green p-6 pt-8">
         <div className="flex items-center gap-2 mb-4">
           <Hotel size={20} className="text-pin-green" />
-          <h2 className="text-lg font-bold">Hotels & Stays</h2>
+          <h2 className="section-header">Hotels & Stays</h2>
         </div>
 
         {hotels.length > 0 && (

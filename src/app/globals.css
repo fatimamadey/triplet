@@ -181,9 +181,77 @@ h1, h2, h3, h4, h5, h6 {
 /* ===== HANDWRITTEN ACCENT ===== */
 .font-handwritten { font-family: var(--font-handwritten); }
 
+/* ===== SECTION HEADERS — handwritten style ===== */
+.section-header {
+  font-family: var(--font-handwritten);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+/* ===== PAPER TEXTURE INPUTS ===== */
+input, textarea, select {
+  background-color: var(--cream) !important;
+  border-color: var(--cork) !important;
+}
+input:focus, textarea:focus, select:focus {
+  background-color: var(--paper) !important;
+}
+
 /* ===== FORM INPUTS IN DARK MODE ===== */
 .dark input, .dark textarea, .dark select, .dark [type="date"], .dark [type="time"], .dark [type="number"], .dark [type="datetime-local"] {
   color-scheme: dark;
+}
+
+/* ===== SIDEBAR WOOD GRAIN ===== */
+.sidebar-wood {
+  background-color: var(--sidebar-bg);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(0, 0, 0, 0.03) 40px,
+      rgba(0, 0, 0, 0.03) 41px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      rgba(0, 0, 0, 0.015) 8px,
+      rgba(0, 0, 0, 0.015) 9px
+    );
+}
+
+/* ===== CARD HOVER — CORNER LIFT ===== */
+.pinned-card {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.pinned-card:hover {
+  box-shadow:
+    2px 4px 6px rgba(0, 0, 0, 0.08),
+    4px 8px 20px rgba(0, 0, 0, 0.12),
+    -1px -1px 0 rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Preserve tilt on hover */
+.tilt-1:hover { transform: rotate(-1.2deg) translateY(-2px); }
+.tilt-2:hover { transform: rotate(0.8deg) translateY(-2px); }
+.tilt-3:hover { transform: rotate(-1.8deg) translateY(-2px); }
+.tilt-4:hover { transform: rotate(0.5deg) translateY(-2px); }
+
+/* ===== STICKY NOTE (for empty states) ===== */
+.sticky-note {
+  background: #fef9c3;
+  padding: 1.5rem;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.1);
+  transform: rotate(-1deg);
+  position: relative;
+  font-family: var(--font-handwritten);
+}
+.dark .sticky-note {
+  background: #4a4220;
 }
 
 /* ===== SMOOTH TRANSITIONS ===== */
@@ -204,5 +272,6 @@ h1, h2, h3, h4, h5, h6 {
 /* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 640px) {
   .tilt-1, .tilt-2, .tilt-3, .tilt-4 { transform: none; }
+  .tilt-1:hover, .tilt-2:hover, .tilt-3:hover, .tilt-4:hover { transform: translateY(-2px); }
   .pinned-card::before { width: 16px; height: 16px; top: -6px; }
 }

@@ -59,8 +59,8 @@ export default function DayColumn({
 
       {/* Items */}
       {(day.items || []).length === 0 ? (
-        <p className="text-xs text-muted italic py-2">
-          No activities yet. Add restaurants, sightseeing, and more!
+        <p className="text-sm text-muted italic py-3 font-handwritten">
+          Nothing planned yet — what should we do today?
         </p>
       ) : (
         <div className="space-y-2">
