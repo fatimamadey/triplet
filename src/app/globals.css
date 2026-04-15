@@ -42,22 +42,16 @@ body {
 
 /* ===== DARK MODE ===== */
 .dark {
-  --color-cork: #3a3228;
-  --color-cork-light: #1e1a15;
-  --color-cork-dark: #4a3f32;
-  --color-cream: #2a241c;
-  --color-cream-dark: #332c22;
-  --color-paper: #252018;
-  --color-background: #1e1a15;
-  --color-foreground: #e8dcc8;
-  --color-muted: #9a8a74;
-  --color-border: #4a3f32;
-}
-
-.dark body,
-.dark {
-  background: var(--color-cork-light);
-  color: var(--color-foreground);
+  --color-cork: #3d3529;
+  --color-cork-light: #1c1814;
+  --color-cork-dark: #524638;
+  --color-cream: #2c261e;
+  --color-cream-dark: #3a3228;
+  --color-paper: #2a241c;
+  --color-background: #1c1814;
+  --color-foreground: #f5efe5;
+  --color-muted: #bfae96;
+  --color-border: #524638;
 }
 
 /* ===== CORK BOARD BACKGROUND ===== */

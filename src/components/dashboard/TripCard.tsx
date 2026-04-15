@@ -55,7 +55,7 @@ export default function TripCard({
 
   const formatDate = (date: string | null) => {
     if (!date) return null;
-    return new Date(date).toLocaleDateString("en-US", {
+    return new Date(date + "T00:00:00").toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });

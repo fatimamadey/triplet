@@ -22,7 +22,7 @@ export default function HotelResultCard({
 }: HotelResultCardProps) {
   const nights = checkIn && checkOut
     ? Math.max(1, Math.ceil(
-        (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)
+        (new Date(checkOut + "T00:00:00").getTime() - new Date(checkIn + "T00:00:00").getTime()) / (1000 * 60 * 60 * 24)
       ))
     : null;
 

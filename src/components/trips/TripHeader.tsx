@@ -78,8 +78,8 @@ export default function TripHeader({ trip }: { trip: Trip }) {
                   </button>
                   {showStatusMenu && (
                     <>
-                      <div className="fixed inset-0 z-20" onClick={() => setShowStatusMenu(false)} />
-                      <div className="absolute top-full left-0 mt-1 bg-paper border border-cork rounded-lg shadow-lg z-30 py-1 min-w-[120px]">
+                      <div className="fixed inset-0 z-40" onClick={() => setShowStatusMenu(false)} />
+                      <div className="absolute top-full left-0 mt-1 bg-paper border border-cork rounded-lg shadow-xl z-50 py-1 min-w-[120px]">
                         {statuses.map((s) => (
                           <button
                             key={s.value}

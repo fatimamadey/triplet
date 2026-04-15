@@ -28,7 +28,7 @@ export default function HotelDetailModal({
       ? Math.max(
           1,
           Math.ceil(
-            (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
+            (new Date(checkOut + "T00:00:00").getTime() - new Date(checkIn + "T00:00:00").getTime()) /
               (1000 * 60 * 60 * 24)
           )
         )

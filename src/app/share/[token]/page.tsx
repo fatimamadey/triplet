@@ -110,7 +110,7 @@ export default function SharedTripPage() {
   const { trip, flights, hotels, itinerary, costs } = data;
 
   const formatDate = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
+    d ? new Date(d + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
 
   return (
     <div className="min-h-screen cork-bg">

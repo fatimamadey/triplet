@@ -17,8 +17,8 @@ export default function HotelSavedCard({
       ? Math.max(
           1,
           Math.ceil(
-            (new Date(hotel.check_out).getTime() -
-              new Date(hotel.check_in).getTime()) /
+            (new Date(hotel.check_out + "T00:00:00").getTime() -
+              new Date(hotel.check_in + "T00:00:00").getTime()) /
               (1000 * 60 * 60 * 24)
           )
         )
@@ -50,9 +50,9 @@ export default function HotelSavedCard({
           <div className="text-xs text-muted mt-1">
             {hotel.check_in && hotel.check_out && (
               <span>
-                {new Date(hotel.check_in).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {new Date(hotel.check_in + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 {" — "}
-                {new Date(hotel.check_out).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                {new Date(hotel.check_out + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 {nights && ` · ${nights} night${nights > 1 ? "s" : ""}`}
               </span>
             )}
