@@ -49,10 +49,11 @@ export default function TripHeader({ trip }: { trip: Trip }) {
         Dashboard
       </Link>
 
-      {/* Header card with image */}
-      <div className="pinned-card pin-red overflow-hidden">
+      {/* Header card */}
+      <div className="pinned-card pin-red">
+        {/* Image with its own overflow clip */}
         {trip.image_url ? (
-          <div className="h-40 overflow-hidden">
+          <div className="h-40 overflow-hidden rounded-t-sm">
             <img
               src={trip.image_url}
               alt={trip.destination}
@@ -60,12 +61,12 @@ export default function TripHeader({ trip }: { trip: Trip }) {
             />
           </div>
         ) : (
-          <div className="h-40 bg-gradient-to-br from-teal/20 via-pin-blue/15 to-sunshine/20" />
+          <div className="h-40 bg-gradient-to-br from-teal/20 via-pin-blue/15 to-sunshine/20 rounded-t-sm" />
         )}
         <div className="p-5 pt-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-2xl font-bold text-foreground">{trip.title}</h1>
                 {/* Status toggle */}
                 <div className="relative">
@@ -79,12 +80,12 @@ export default function TripHeader({ trip }: { trip: Trip }) {
                   {showStatusMenu && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setShowStatusMenu(false)} />
-                      <div className="absolute top-full left-0 mt-1 bg-paper border border-cork rounded-lg shadow-xl z-50 py-1 min-w-[120px]">
+                      <div className="absolute top-full left-0 mt-1 bg-paper border border-cork rounded-lg shadow-xl z-50 py-1 min-w-[130px]">
                         {statuses.map((s) => (
                           <button
                             key={s.value}
                             onClick={() => handleStatusChange(s.value)}
-                            className={`w-full text-left px-3 py-1.5 text-xs font-medium hover:bg-cream-dark transition-colors ${
+                            className={`w-full text-left px-3 py-2 text-sm font-medium hover:bg-cream-dark transition-colors ${
                               s.value === trip.status ? "text-teal" : "text-foreground"
                             }`}
                           >
