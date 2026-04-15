@@ -10,6 +10,7 @@ import FlightSavedCard from "@/components/planning/FlightSavedCard";
 import ManualTransportForm from "@/components/planning/ManualTransportForm";
 import HotelSearchForm from "@/components/planning/HotelSearchForm";
 import HotelResultCard from "@/components/planning/HotelResultCard";
+import HotelDetailModal from "@/components/planning/HotelDetailModal";
 import HotelSavedCard from "@/components/planning/HotelSavedCard";
 import {
   useFlights,
@@ -47,6 +48,7 @@ export default function PlanningPage() {
   // Hotel state
   const [hotelSearchParams, setHotelSearchParams] = useState<HotelSearchParams | null>(null);
   const [addingHotelId, setAddingHotelId] = useState<string | null>(null);
+  const [detailHotel, setDetailHotel] = useState<HotelResult | null>(null);
   const { hotels } = useHotels(tripId);
   const {
     results: hotelResults,
@@ -306,7 +308,7 @@ export default function PlanningPage() {
                 </h3>
                 <div className="space-y-3">
                   {hotelResults.map((hotel) => (
-                    <HotelResultCard key={hotel.id} hotel={hotel} checkIn={hotelSearchParams.checkIn} checkOut={hotelSearchParams.checkOut} onAdd={handleAddHotel} adding={addingHotelId === hotel.id} />
+                    <HotelResultCard key={hotel.id} hotel={hotel} checkIn={hotelSearchParams.checkIn} checkOut={hotelSearchParams.checkOut} onAdd={handleAddHotel} onViewDetails={setDetailHotel} adding={addingHotelId === hotel.id} />
                   ))}
                 </div>
               </>
@@ -314,6 +316,18 @@ export default function PlanningPage() {
           </div>
         )}
       </div>
+
+      {/* Hotel detail modal */}
+      {detailHotel && hotelSearchParams && (
+        <HotelDetailModal
+          hotel={detailHotel}
+          checkIn={hotelSearchParams.checkIn}
+          checkOut={hotelSearchParams.checkOut}
+          onAdd={handleAddHotel}
+          onClose={() => setDetailHotel(null)}
+          adding={addingHotelId === detailHotel.id}
+        />
+      )}
     </div>
   );
 }

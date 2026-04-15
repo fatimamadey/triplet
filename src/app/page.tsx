@@ -16,7 +16,7 @@ export default async function HomePage() {
       <div className="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
         <div className="inline-flex items-center gap-2 mb-6">
           <Map size={40} className="text-teal" />
-          <h1 className="text-5xl font-bold text-foreground">Triplet</h1>
+          <h1 className="text-6xl font-handwritten font-bold text-foreground">Triplet</h1>
         </div>
         <p className="text-xl text-muted max-w-2xl mx-auto mb-10">
           Plan your trips, discover amazing places, and share itineraries with

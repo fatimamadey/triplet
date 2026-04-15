@@ -49,8 +49,11 @@ export async function GET(req: NextRequest) {
       hotelClass: p.extracted_hotel_class || null,
       hotelClassLabel: p.hotel_class || null,
       image: p.images?.[0]?.thumbnail || p.images?.[0]?.original_image || null,
+      images: (p.images || []).slice(0, 5).map((img) => img.original_image || img.thumbnail),
       amenities: p.amenities || [],
       coordinates: p.gps_coordinates || null,
+      checkInTime: p.check_in_time || null,
+      checkOutTime: p.check_out_time || null,
     }));
 
     return NextResponse.json(properties);

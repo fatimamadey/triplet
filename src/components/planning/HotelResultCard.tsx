@@ -1,13 +1,14 @@
 "use client";
 
 import { HotelResult } from "@/hooks/useHotels";
-import { Star, Plus, MapPin } from "lucide-react";
+import { Star, Plus, MapPin, ChevronRight } from "lucide-react";
 
 interface HotelResultCardProps {
   hotel: HotelResult;
   checkIn: string;
   checkOut: string;
   onAdd: (hotel: HotelResult) => void;
+  onViewDetails: (hotel: HotelResult) => void;
   adding?: boolean;
 }
 
@@ -16,6 +17,7 @@ export default function HotelResultCard({
   checkIn,
   checkOut,
   onAdd,
+  onViewDetails,
   adding,
 }: HotelResultCardProps) {
   const nights = checkIn && checkOut
@@ -25,7 +27,10 @@ export default function HotelResultCard({
     : null;
 
   return (
-    <div className="bg-cream-dark rounded-lg border border-cork/50 overflow-hidden flex">
+    <div
+      className="bg-cream-dark rounded-lg border border-cork/50 overflow-hidden flex cursor-pointer hover:border-teal/50 transition-colors"
+      onClick={() => onViewDetails(hotel)}
+    >
       {/* Image */}
       {hotel.image ? (
         <div className="w-32 sm:w-40 flex-shrink-0">
@@ -62,12 +67,13 @@ export default function HotelResultCard({
                 )}
               </div>
             </div>
+            <ChevronRight size={16} className="text-muted flex-shrink-0 mt-1" />
           </div>
 
           {/* Amenities */}
           {hotel.amenities.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
-              {hotel.amenities.slice(0, 4).map((a) => (
+              {hotel.amenities.slice(0, 3).map((a) => (
                 <span
                   key={a}
                   className="text-xs bg-paper px-1.5 py-0.5 rounded text-muted"
@@ -75,9 +81,9 @@ export default function HotelResultCard({
                   {a}
                 </span>
               ))}
-              {hotel.amenities.length > 4 && (
+              {hotel.amenities.length > 3 && (
                 <span className="text-xs text-muted">
-                  +{hotel.amenities.length - 4} more
+                  +{hotel.amenities.length - 3}
                 </span>
               )}
             </div>
@@ -97,7 +103,7 @@ export default function HotelResultCard({
             )}
           </div>
           <button
-            onClick={() => onAdd(hotel)}
+            onClick={(e) => { e.stopPropagation(); onAdd(hotel); }}
             disabled={adding}
             className="flex items-center gap-1 px-3 py-1.5 bg-teal text-white rounded text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           >

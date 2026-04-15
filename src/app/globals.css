@@ -1,33 +1,35 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
 
 @theme inline {
-  /* Cork board / bulletin board palette */
-  --color-cork: #c4a882;
-  --color-cork-light: #d4be9c;
-  --color-cork-dark: #a08060;
+  /* Cork board / bulletin board palette — LIGHTER */
+  --color-cork: #d4be9c;
+  --color-cork-light: #e8dcc8;
+  --color-cork-dark: #b8a07a;
   --color-cream: #fdf6e3;
-  --color-cream-dark: #f5e6c8;
+  --color-cream-dark: #f0e4cc;
   --color-paper: #fffef9;
 
   /* Vibrant accent colors */
-  --color-pin-red: #e74c3c;
-  --color-pin-blue: #3498db;
+  --color-pin-red: #d63031;
+  --color-pin-blue: #2980b9;
   --color-pin-green: #27ae60;
-  --color-pin-yellow: #f1c40f;
-  --color-teal: #1abc9c;
-  --color-coral: #ff6b6b;
-  --color-sunshine: #feca57;
+  --color-pin-yellow: #f39c12;
+  --color-teal: #00b894;
+  --color-coral: #e74c3c;
+  --color-sunshine: #fdcb6e;
   --color-leaf: #00b894;
 
   /* Semantic colors */
   --color-background: var(--color-cork-light);
-  --color-foreground: #2d2017;
-  --color-muted: #8b7355;
+  --color-foreground: #1a120b;
+  --color-muted: #7a6652;
   --color-border: #c4a882;
 
   /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-handwritten: 'Caveat', cursive;
 }
 
 body {
@@ -36,84 +38,160 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Cork board texture using CSS gradient */
+/* ===== CORK BOARD BACKGROUND ===== */
 .cork-bg {
-  background-color: #c4a882;
+  background-color: #e2d1b5;
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(139, 115, 85, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(139, 115, 85, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(210, 180, 140, 0.2) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+    /* Subtle grain texture */
+    url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
+    /* Warm light spots */
+    radial-gradient(ellipse at 15% 25%, rgba(255, 235, 200, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 75%, rgba(255, 235, 200, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(200, 170, 130, 0.1) 0%, transparent 60%);
+  /* Soft wood-frame border effect */
+  box-shadow: inset 0 0 80px rgba(139, 115, 85, 0.12);
 }
 
-/* Pinned card effect */
+/* ===== PINNED CARD — PAPER TEXTURE ===== */
 .pinned-card {
   background: var(--color-paper);
-  border-radius: 2px;
-  box-shadow:
-    2px 3px 8px rgba(0, 0, 0, 0.15),
-    0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 1px;
   position: relative;
+  /* Layered shadow for depth: paper lift + soft ambient */
+  box-shadow:
+    1px 2px 3px rgba(0, 0, 0, 0.08),
+    2px 4px 10px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  /* Subtle paper texture via gradient noise */
+  background-image:
+    linear-gradient(135deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(0,0,0,0.01) 25%, transparent 25%);
+  background-size: 4px 4px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+.pinned-card:hover {
+  box-shadow:
+    2px 4px 6px rgba(0, 0, 0, 0.1),
+    3px 6px 16px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
+}
+
+/* ===== REALISTIC THUMBTACKS ===== */
 .pinned-card::before {
   content: '';
   position: absolute;
-  top: -6px;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   z-index: 10;
+  /* 3D tack shape */
+  box-shadow:
+    /* Inner highlight — top-left light catch */
+    inset -2px -2px 3px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 3px rgba(255, 255, 255, 0.4),
+    /* Drop shadow beneath the tack */
+    0 3px 5px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.pin-red::before { background: var(--color-pin-red); }
-.pin-blue::before { background: var(--color-pin-blue); }
-.pin-green::before { background: var(--color-pin-green); }
-.pin-yellow::before { background: var(--color-pin-yellow); }
+/* Tack pin "spike" shadow on card */
+.pinned-card::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.12);
+  filter: blur(2px);
+  z-index: 9;
+}
 
-/* Slight rotation variants for bulletin board feel */
-.tilt-1 { transform: rotate(-1deg); }
-.tilt-2 { transform: rotate(1deg); }
-.tilt-3 { transform: rotate(-2deg); }
+.pin-red::before {
+  background: radial-gradient(circle at 35% 35%, #ff6b6b, #c0392b 60%, #962d22);
+}
+.pin-blue::before {
+  background: radial-gradient(circle at 35% 35%, #74b9ff, #2980b9 60%, #1e6fa0);
+}
+.pin-green::before {
+  background: radial-gradient(circle at 35% 35%, #55efc4, #27ae60 60%, #1e8449);
+}
+.pin-yellow::before {
+  background: radial-gradient(circle at 35% 35%, #ffeaa7, #f39c12 60%, #d68910);
+}
+
+/* ===== CARD TILTS ===== */
+.tilt-1 { transform: rotate(-1.2deg); }
+.tilt-2 { transform: rotate(0.8deg); }
+.tilt-3 { transform: rotate(-1.8deg); }
 .tilt-4 { transform: rotate(0.5deg); }
 
-/* Polaroid image frame */
+/* ===== POLAROID FRAME ===== */
 .polaroid {
   background: white;
-  padding: 8px 8px 32px 8px;
-  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.2);
+  padding: 6px 6px 28px 6px;
+  box-shadow:
+    2px 3px 8px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Washi tape decoration */
+/* ===== WASHI TAPE ===== */
 .washi-tape {
-  background: linear-gradient(135deg, rgba(26, 188, 156, 0.6) 0%, rgba(26, 188, 156, 0.4) 100%);
-  height: 24px;
-  transform: rotate(-1deg);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 184, 148, 0.35) 0%,
+    rgba(0, 184, 148, 0.25) 50%,
+    rgba(0, 184, 148, 0.35) 100%
+  );
+  height: 20px;
+  transform: rotate(-0.5deg);
   border-radius: 1px;
+  /* Tape texture — semi-transparent with slight pattern */
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.15) 4px,
+    rgba(255, 255, 255, 0.15) 5px
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* Travel sticker badge */
+/* ===== TRAVEL STICKER BADGE ===== */
 .sticker {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   border: 2px solid currentColor;
   transform: rotate(-2deg);
+  text-transform: uppercase;
 }
 
-/* Smooth transitions */
+/* ===== HANDWRITTEN ACCENT ===== */
+.font-handwritten {
+  font-family: var(--font-handwritten);
+}
+
+/* ===== SMOOTH TRANSITIONS ===== */
 * {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* ===== CUSTOM SCROLLBAR ===== */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -121,37 +199,27 @@ body {
   background: var(--color-cork-light);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-cork);
+  background: var(--color-cork-dark);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cork-dark);
+  background: #a08060;
 }
 
-/* Focus ring for accessibility */
+/* ===== FOCUS RING ===== */
 :focus-visible {
   outline: 2px solid var(--color-teal);
   outline-offset: 2px;
 }
 
-/* Pinned card hover lift */
-.pinned-card {
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-.pinned-card:hover {
-  box-shadow:
-    3px 5px 12px rgba(0, 0, 0, 0.2),
-    0 2px 4px rgba(0, 0, 0, 0.12);
-}
-
-/* Mobile responsive adjustments */
+/* ===== MOBILE RESPONSIVE ===== */
 @media (max-width: 640px) {
   .tilt-1, .tilt-2, .tilt-3, .tilt-4 {
     transform: none;
   }
   .pinned-card::before {
-    width: 12px;
-    height: 12px;
-    top: -4px;
+    width: 16px;
+    height: 16px;
+    top: -6px;
   }
 }

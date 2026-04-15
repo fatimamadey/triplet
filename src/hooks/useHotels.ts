@@ -45,8 +45,11 @@ export interface HotelResult {
   hotelClass: number | null;
   hotelClassLabel: string | null;
   image: string | null;
+  images: string[];
   amenities: string[];
   coordinates: { latitude: number; longitude: number } | null;
+  checkInTime: string | null;
+  checkOutTime: string | null;
 }
 
 export function useHotelSearch(params: HotelSearchParams | null) {

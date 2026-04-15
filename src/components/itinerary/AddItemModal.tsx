@@ -9,6 +9,7 @@ interface PlaceResult {
   address: string | null;
   categories: string[];
   photo: string | null;
+  rating: number | null;
 }
 
 interface AddItemModalProps {
@@ -50,7 +51,8 @@ export default function AddItemModal({
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Place search state
+  // Place search — off by default
+  const [showSearch, setShowSearch] = useState(false);
   const [placeQuery, setPlaceQuery] = useState("");
   const [placeResults, setPlaceResults] = useState<PlaceResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -64,11 +66,10 @@ export default function AddItemModal({
         `/api/search/places?query=${encodeURIComponent(placeQuery)}&near=${encodeURIComponent(destination)}`
       );
       if (res.ok) {
-        const data = await res.json();
-        setPlaceResults(data);
+        setPlaceResults(await res.json());
       }
     } catch {
-      // Silent fail — user can still add manually
+      // Silent fail
     } finally {
       setSearching(false);
     }
@@ -79,9 +80,9 @@ export default function AddItemModal({
     setTitle(place.name);
     if (place.categories.length > 0) {
       const cat = place.categories[0].toLowerCase();
-      if (cat.includes("restaurant") || cat.includes("food") || cat.includes("cafe") || cat.includes("bar")) {
+      if (cat.includes("restaurant") || cat.includes("food") || cat.includes("cafe") || cat.includes("bar") || cat.includes("ramen")) {
         setCategory("restaurant");
-      } else if (cat.includes("museum") || cat.includes("landmark") || cat.includes("park") || cat.includes("monument")) {
+      } else if (cat.includes("museum") || cat.includes("landmark") || cat.includes("park") || cat.includes("monument") || cat.includes("temple")) {
         setCategory("attraction");
       } else if (cat.includes("shop") || cat.includes("store") || cat.includes("mall") || cat.includes("market")) {
         setCategory("shopping");
@@ -89,6 +90,7 @@ export default function AddItemModal({
     }
     setPlaceResults([]);
     setPlaceQuery("");
+    setShowSearch(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -129,72 +131,103 @@ export default function AddItemModal({
         </div>
 
         <div className="p-4 space-y-4">
-          {/* Place search */}
-          <div>
-            <label className="block text-xs font-semibold text-muted mb-1 uppercase tracking-wide">
-              Search for a Place (optional)
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={placeQuery}
-                onChange={(e) => setPlaceQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handlePlaceSearch())}
-                placeholder={`e.g., ramen in ${destination}`}
-                className="flex-1 px-3 py-2 rounded border-2 border-cork bg-paper text-foreground placeholder:text-muted focus:outline-none focus:border-teal transition-colors text-sm"
-              />
+          {/* Selected place banner */}
+          {selectedPlace && (
+            <div className="flex items-center gap-2 bg-teal/10 rounded px-3 py-2 text-sm">
+              <MapPin size={14} className="text-teal" />
+              <span className="font-medium flex-1">{selectedPlace.name}</span>
+              {selectedPlace.rating && (
+                <span className="text-xs text-muted">{selectedPlace.rating} stars</span>
+              )}
               <button
                 type="button"
-                onClick={handlePlaceSearch}
-                disabled={searching || !placeQuery.trim()}
-                className="px-3 py-2 bg-pin-blue text-white rounded text-sm hover:opacity-90 disabled:opacity-50"
+                onClick={() => { setSelectedPlace(null); setTitle(""); }}
+                className="text-muted hover:text-foreground"
               >
-                {searching ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+                <X size={14} />
               </button>
             </div>
+          )}
 
-            {/* Place results */}
-            {placeResults.length > 0 && (
-              <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
-                {placeResults.map((place) => (
-                  <button
-                    key={place.id}
-                    type="button"
-                    onClick={() => handleSelectPlace(place)}
-                    className="w-full flex items-center gap-2 p-2 rounded bg-cream-dark hover:bg-cork/20 transition-colors text-left"
-                  >
-                    {place.photo ? (
-                      <img src={place.photo} alt="" className="w-10 h-10 rounded object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded bg-cork/20 flex items-center justify-center">
-                        <MapPin size={14} className="text-muted" />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{place.name}</p>
-                      <p className="text-xs text-muted truncate">
-                        {place.categories.join(" · ")}{place.address && ` · ${place.address}`}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {selectedPlace && (
-              <div className="mt-2 flex items-center gap-2 bg-teal/10 rounded px-3 py-2 text-sm">
-                <MapPin size={14} className="text-teal" />
-                <span className="font-medium">{selectedPlace.name}</span>
+          {/* Google Maps search toggle — optional, costs 1 SerpAPI credit */}
+          {!selectedPlace && (
+            <div>
+              {!showSearch ? (
                 <button
                   type="button"
-                  onClick={() => { setSelectedPlace(null); setTitle(""); }}
-                  className="ml-auto text-muted hover:text-foreground"
+                  onClick={() => setShowSearch(true)}
+                  className="flex items-center gap-2 text-xs text-pin-blue hover:text-foreground transition-colors"
                 >
-                  <X size={14} />
+                  <Search size={12} />
+                  Search Google Maps for a place (uses 1 API credit)
                 </button>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-semibold text-muted uppercase tracking-wide">
+                      Search Google Maps
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => { setShowSearch(false); setPlaceResults([]); }}
+                      className="text-xs text-muted hover:text-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={placeQuery}
+                      onChange={(e) => setPlaceQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handlePlaceSearch())}
+                      placeholder={`e.g., ramen in ${destination}`}
+                      autoFocus
+                      className="flex-1 px-3 py-2 rounded border-2 border-cork bg-paper text-foreground placeholder:text-muted focus:outline-none focus:border-teal transition-colors text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={handlePlaceSearch}
+                      disabled={searching || !placeQuery.trim()}
+                      className="px-3 py-2 bg-pin-blue text-white rounded text-sm hover:opacity-90 disabled:opacity-50"
+                    >
+                      {searching ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+                    </button>
+                  </div>
+
+                  {placeResults.length > 0 && (
+                    <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
+                      {placeResults.map((place) => (
+                        <button
+                          key={place.id}
+                          type="button"
+                          onClick={() => handleSelectPlace(place)}
+                          className="w-full flex items-center gap-2 p-2 rounded bg-cream-dark hover:bg-cork/20 transition-colors text-left"
+                        >
+                          {place.photo ? (
+                            <img src={place.photo} alt="" className="w-10 h-10 rounded object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 rounded bg-cork/20 flex items-center justify-center">
+                              <MapPin size={14} className="text-muted" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{place.name}</p>
+                            <p className="text-xs text-muted truncate">
+                              {place.categories.join(" · ")}{place.address && ` · ${place.address}`}
+                            </p>
+                          </div>
+                          {place.rating && (
+                            <span className="text-xs font-medium text-sunshine">{place.rating}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">

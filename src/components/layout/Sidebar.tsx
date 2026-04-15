@@ -46,7 +46,7 @@ export default function Sidebar() {
         <div className="p-6 border-b border-cork">
           <Link href="/dashboard" className="flex items-center gap-3">
             <Map size={28} className="text-sunshine" />
-            <span className="text-2xl font-bold tracking-tight">Triplet</span>
+            <span className="text-3xl font-handwritten font-bold tracking-tight">Triplet</span>
           </Link>
         </div>
 
